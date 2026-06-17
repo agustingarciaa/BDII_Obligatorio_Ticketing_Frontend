@@ -1,180 +1,227 @@
-import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useCallback, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ExternalLink } from '@/components/external-link';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Collapsible } from '@/components/ui/collapsible';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { escanearQR } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 
-export default function TabTwoScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
+type Estado =
+  | { tipo: 'escaneando' }
+  | { tipo: 'procesando' }
+  | { tipo: 'exito'; mensaje: string }
+  | { tipo: 'error'; mensaje: string };
+
+export default function EscanearScreen() {
+  const { token } = useAuth();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [estado, setEstado] = useState<Estado>({ tipo: 'escaneando' });
+  const procesando = useRef(false);
+
+  const handleBarcode = useCallback(
+    async ({ data }: { data: string }) => {
+      if (procesando.current || estado.tipo !== 'escaneando') return;
+      procesando.current = true;
+      setEstado({ tipo: 'procesando' });
+
+      try {
+        const res = await escanearQR(token!, data);
+        const msg =
+          res.mensaje ?? res.message ?? 'Entrada validada correctamente.';
+        setEstado({ tipo: 'exito', mensaje: msg });
+      } catch (e) {
+        setEstado({
+          tipo: 'error',
+          mensaje: e instanceof Error ? e.message : 'Error al validar.',
+        });
+      }
+    },
+    [token, estado.tipo],
+  );
+
+  const reiniciar = () => {
+    procesando.current = false;
+    setEstado({ tipo: 'escaneando' });
   };
-  const theme = useTheme();
 
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-    web: {
-      paddingTop: Spacing.six,
-      paddingBottom: Spacing.four,
-    },
-  });
+  if (!permission) {
+    return <View style={styles.safe} />;
+  }
+
+  if (!permission.granted) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.centered}>
+          <Text style={styles.permisoTexto}>
+            Se necesita acceso a la cámara para escanear QR.
+          </Text>
+          <Pressable style={styles.btn} onPress={requestPermission}>
+            <Text style={styles.btnText}>Permitir cámara</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}>
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="subtitle">Explore</ThemedText>
-          <ThemedText style={styles.centerText} themeColor="textSecondary">
-            This starter app includes example{'\n'}code to help you get started.
-          </ThemedText>
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.header}>
+        <Text style={styles.brand}>
+          ⚽ MUNDIAL <Text style={styles.brandGold}>2026</Text>
+        </Text>
+        <Text style={styles.title}>Escanear QR</Text>
+        <Text style={styles.subtitle}>Apuntá la cámara al código de la entrada</Text>
+      </View>
 
-          <ExternalLink href="https://docs.expo.dev" asChild>
-            <Pressable style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedView type="backgroundElement" style={styles.linkButton}>
-                <ThemedText type="link">Expo documentation</ThemedText>
-                <SymbolView
-                  tintColor={theme.text}
-                  name={{ ios: 'arrow.up.right.square', android: 'link', web: 'link' }}
-                  size={12}
-                />
-              </ThemedView>
+      <View style={styles.cameraWrapper}>
+        {estado.tipo === 'escaneando' || estado.tipo === 'procesando' ? (
+          <CameraView
+            style={StyleSheet.absoluteFill}
+            facing="back"
+            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+            onBarcodeScanned={
+              estado.tipo === 'escaneando' ? handleBarcode : undefined
+            }
+          />
+        ) : null}
+
+        <View style={styles.overlay}>
+          <View style={styles.visor} />
+        </View>
+
+        {estado.tipo === 'procesando' && (
+          <View style={styles.resultOverlay}>
+            <ActivityIndicator color="#ffcc29" size="large" />
+            <Text style={styles.resultMsg}>Validando entrada...</Text>
+          </View>
+        )}
+
+        {(estado.tipo === 'exito' || estado.tipo === 'error') && (
+          <View style={styles.resultOverlay}>
+            <Text style={styles.resultIcon}>
+              {estado.tipo === 'exito' ? '✅' : '❌'}
+            </Text>
+            <Text
+              style={[
+                styles.resultMsg,
+                estado.tipo === 'exito'
+                  ? styles.resultMsgExito
+                  : styles.resultMsgError,
+              ]}>
+              {estado.mensaje}
+            </Text>
+            <Pressable style={styles.btn} onPress={reiniciar}>
+              <Text style={styles.btnText}>Escanear otra</Text>
             </Pressable>
-          </ExternalLink>
-        </ThemedView>
-
-        <ThemedView style={styles.sectionsWrapper}>
-          <Collapsible title="File-based routing">
-            <ThemedText type="small">
-              This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText> and{' '}
-              <ThemedText type="code">src/app/explore.tsx</ThemedText>
-            </ThemedText>
-            <ThemedText type="small">
-              The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
-              the tab navigator.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/router/introduction">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Android, iOS, and web support">
-            <ThemedView type="backgroundElement" style={styles.collapsibleContent}>
-              <ThemedText type="small">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <ThemedText type="smallBold">w</ThemedText> in the terminal running this
-                project.
-              </ThemedText>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={styles.imageTutorial}
-              />
-            </ThemedView>
-          </Collapsible>
-
-          <Collapsible title="Images">
-            <ThemedText type="small">
-              For static images, you can use the <ThemedText type="code">@2x</ThemedText> and{' '}
-              <ThemedText type="code">@3x</ThemedText> suffixes to provide files for different
-              screen densities.
-            </ThemedText>
-            <Image source={require('@/assets/images/react-logo.png')} style={styles.imageReact} />
-            <ExternalLink href="https://reactnative.dev/docs/images">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Light and dark mode components">
-            <ThemedText type="small">
-              This template has light and dark mode support. The{' '}
-              <ThemedText type="code">useColorScheme()</ThemedText> hook lets you inspect what the
-              user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Animations">
-            <ThemedText type="small">
-              This template includes an example of an animated component. The{' '}
-              <ThemedText type="code">src/components/ui/collapsible.tsx</ThemedText> component uses
-              the powerful <ThemedText type="code">react-native-reanimated</ThemedText> library to
-              animate opening this hint.
-            </ThemedText>
-          </Collapsible>
-        </ThemedView>
-        {Platform.OS === 'web' && <WebBadge />}
-      </ThemedView>
-    </ScrollView>
+          </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  safe: {
     flex: 1,
+    backgroundColor: '#081226',
   },
-  contentContainer: {
-    flexDirection: 'row',
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 20,
+    gap: 2,
+  },
+  brand: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#fafafa',
+    letterSpacing: 0.5,
+  },
+  brandGold: {
+    color: '#ffcc29',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#fafafa',
+    marginTop: 2,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginTop: 2,
+  },
+  cameraWrapper: {
+    flex: 1,
+    marginHorizontal: 20,
+    marginBottom: 24,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#0f1f3d',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
-  },
-  container: {
-    maxWidth: MaxContentWidth,
-    flexGrow: 1,
-  },
-  titleContainer: {
-    gap: Spacing.three,
     alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
   },
-  centerText: {
+  visor: {
+    width: 220,
+    height: 220,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#ffcc29',
+  },
+  resultOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#081226ee',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+    paddingHorizontal: 32,
+  },
+  resultIcon: {
+    fontSize: 56,
+  },
+  resultMsg: {
+    fontSize: 17,
+    color: '#fafafa',
     textAlign: 'center',
+    fontWeight: '500',
   },
-  pressed: {
-    opacity: 0.7,
+  resultMsgExito: {
+    color: '#4ade80',
   },
-  linkButton: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
+  resultMsgError: {
+    color: '#f87171',
+  },
+  btn: {
+    backgroundColor: '#ffcc29',
+    borderRadius: 999,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+  },
+  btnText: {
+    color: '#081226',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  centered: {
+    flex: 1,
     justifyContent: 'center',
-    gap: Spacing.one,
     alignItems: 'center',
+    gap: 20,
+    paddingHorizontal: 32,
   },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: 'center',
-  },
-  imageTutorial: {
-    width: '100%',
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
+  permisoTexto: {
+    color: '#9ca3af',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
