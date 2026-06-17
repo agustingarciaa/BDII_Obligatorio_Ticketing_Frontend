@@ -1,0 +1,8 @@
+{
+  "name": "BDII_Obligatorio_Ticketing_Frontend",
+  "private": true,
+  "workspaces": [
+    "frontend_ticketing",
+    "mobile_ticketing"
+  ]
+}

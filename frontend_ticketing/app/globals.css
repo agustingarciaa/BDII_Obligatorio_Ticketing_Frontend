@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+@theme {
+  --color-pitch: #0a8a43;
+  --color-pitch-dark: #064d27;
+  --color-night: #081226;
+  --color-night-soft: #0f1f3d;
+  --color-gold: #ffcc29;
+  --color-gold-deep: #e0a915;
+}
+
+/* Fondo tipo estadio de noche con luz cenital */
+.wc-hero {
+  background:
+    radial-gradient(
+      1200px 500px at 50% -10%,
+      rgba(255, 204, 41, 0.18),
+      transparent 60%
+    ),
+    linear-gradient(
+      160deg,
+      var(--color-night) 0%,
+      var(--color-night-soft) 45%,
+      var(--color-pitch-dark) 100%
+    );
+}
+
+/* Líneas de césped sutiles superpuestas */
+.wc-stripes {
+  background-image: repeating-linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.04) 0px,
+    rgba(255, 255, 255, 0.04) 2px,
+    transparent 2px,
+    transparent 40px
+  );
+}
