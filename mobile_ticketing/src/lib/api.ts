@@ -23,3 +23,55 @@ export async function login(
   const data = (await res.json()) as { access_token: string };
   return data.access_token;
 }
+
+export type SectorAsignado = {
+  nombre_sector: string;
+  id_estadio: number;
+  id_evento: number;
+  capacidad_max: number;
+  activo: boolean;
+};
+
+export async function getMisSectores(token: string): Promise<SectorAsignado[]> {
+  const res = await fetch(`${API_URL}/sectores/mis-sectores`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron cargar los sectores asignados.');
+  }
+
+  return res.json() as Promise<SectorAsignado[]>;
+}
+
+export type ResultadoEscaneo = {
+  mensaje?: string;
+  message?: string;
+  valido?: boolean;
+};
+
+export async function escanearQR(
+  token: string,
+  qr_token: string,
+): Promise<ResultadoEscaneo> {
+  const res = await fetch(`${API_URL}/validacion/escanear`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ qr_token }),
+  });
+
+  const data = (await res.json()) as ResultadoEscaneo;
+
+  if (!res.ok) {
+    throw new Error(
+      (data as { message?: string; mensaje?: string }).message ||
+        (data as { message?: string; mensaje?: string }).mensaje ||
+        'QR inválido o entrada ya consumida.',
+    );
+  }
+
+  return data;
+}
