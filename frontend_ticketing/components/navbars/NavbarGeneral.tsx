@@ -1,36 +1,77 @@
-'use client';
+"use client";
+import { useState, useRef, useEffect } from "react";
+import { navStyles } from "./navbarStyles";
 
-import { useRouter } from 'next/navigation';
-import { clearToken } from '@/lib/auth';
+const NAV_LINKS = ["Inicio", "Partidos", "Estadios", "Selecciones"];
 
-// Barra superior temática del Mundial 2026, con etiqueta de rol y logout.
-export default function NavbarGeneral({ rol }: { rol: string }) {
-  const router = useRouter();
+export default function LiquidGlassNavbar({ rol }: { rol?: string }) {
+  const [active, setActive] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const navRef = useRef<HTMLDivElement | null>(null);
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  function logout() {
-    clearToken();
-    router.replace('/');
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <header className="flex items-center justify-between border-b border-white/10 bg-night px-6 py-4">
-      <div className="flex items-center gap-3">
-        <span className="text-2xl" aria-hidden>
-          ⚽
-        </span>
-        <span className="text-lg font-black tracking-tight text-white">
-          MUNDIAL <span className="text-gold">2026</span>
-        </span>
-        <span className="ml-2 rounded-full bg-gold/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gold">
-          {rol}
-        </span>
-      </div>
-      <button
-        onClick={logout}
-        className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+    <div style={navStyles.wrapper}>
+      <nav
+        ref={navRef}
+        style={{
+          ...navStyles.navbar,
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? "translateY(0)" : "translateY(-20px)",
+        }}
       >
-        Cerrar sesión
-      </button>
-    </header>
+        <ul style={navStyles.linkList} role="list">
+          {NAV_LINKS.map((label) => (
+            <li key={label} style={navStyles.linkItem}>
+              <button
+                ref={(el) => {
+                  buttonRefs.current[label] = el;
+                }}
+                style={navStyles.linkBtn}
+                onMouseEnter={() => setActive(label)}
+                onMouseLeave={() => setActive(null)}
+                onClick={() => setActive(label)}
+                aria-current={active === label ? "page" : undefined}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <button
+          ref={(el) => {
+            buttonRefs.current["user"] = el;
+          }}
+          style={navStyles.userBtn}
+          onMouseEnter={() => setActive("user")}
+          onMouseLeave={() => setActive(null)}
+          aria-label="Perfil de usuario"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="8" r="4" fill="#0f0f1a" />
+            <path
+              d="M4 20c0-4 3.6-7 8-7s8 3 8 7"
+              stroke="#0f0f1a"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </svg>
+        </button>
+      </nav>
+    </div>
   );
 }
