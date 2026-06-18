@@ -63,8 +63,13 @@ export async function clearToken(): Promise<void> {
   await deleteTokenStorage();
 }
 
+export async function getTokenAsync(): Promise<string | null> {
+  if (Platform.OS === 'web') return getTokenStorage();
+  return SecureStore.getItemAsync(TOKEN_KEY);
+}
+
 export async function getRole(): Promise<Role | null> {
-  const token = getToken();
+  const token = await getTokenAsync();
   if (!token) return null;
 
   const payload = decodeToken(token);
