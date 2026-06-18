@@ -41,6 +41,9 @@
     <ellipse cx="720" cy="726" rx="770" ry="318"/>
   </g>
 
+  <!-- copa -->
+  <image href="/cup-2025.png" x="520" y="620" width="400" height="400" preserveAspectRatio="xMidYMid meet" />
+
   <!-- cancha con rayas de césped -->
   <ellipse cx="720" cy="772" rx="580" ry="212" fill="url(#pitch)"/>
   <g stroke="#0a7a3c" stroke-opacity="0.35" stroke-width="36">
