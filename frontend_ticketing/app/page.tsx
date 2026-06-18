@@ -1,11 +1,15 @@
 import DashboardHero from "@/components/DashboardHero";
-import NavbarGeneral from "@/components/navbars/NavbarGeneral";
+import LoginModal from "@/components/modals/loginModal";
 
 export default function Home() {
   return (
     <div className="wc-hero ">
-      <NavbarGeneral />
       <DashboardHero />
+      <div className="relative z-10 flex w-full justify-center px-4 pb-12">
+        <div className="w-full max-w-md">
+          <LoginModal />
+        </div>
+      </div>
     </div>
   );
 }
