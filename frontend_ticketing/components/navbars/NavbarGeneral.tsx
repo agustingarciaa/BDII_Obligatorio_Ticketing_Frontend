@@ -10,7 +10,7 @@ export interface NavLink {
 }
 
 const DEFAULT_LINKS: NavLink[] = [
-  { label: "Partidos", href: "/partidos" },
+  { label: "Partidos", href: "/dashboard_admin/partidos" },
   { label: "Estadios", href: "/estadios" },
   { label: "Selecciones", href: "/selecciones" },
 ];
