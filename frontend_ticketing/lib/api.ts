@@ -64,6 +64,37 @@ export type RegisterInput = {
 
 // Auto-registro del usuario general (POST /auth/register).
 // El backend devuelve el token ya logueado como CLIENTE.
+export type MasVendidoRow = {
+  id: number;
+  equipo_pais_local: string;
+  equipo_pais_visitante: string;
+  fecha_hora: Date | string;
+  estadio: string;
+  total_entradas_vendidas: number;
+  ingreso_total: string | number;
+};
+
+export async function fetchPartidosMasVendidos(): Promise<MasVendidoRow[]> {
+  const token =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('ticketing_token')
+      : null;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/estadisticas/partidos/mas-vendidos`, {
+    headers,
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener los partidos más vendidos.');
+  }
+
+  return res.json() as Promise<MasVendidoRow[]>;
+}
+
 export async function register(input: RegisterInput): Promise<string> {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
