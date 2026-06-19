@@ -74,6 +74,13 @@ export type MasVendidoRow = {
   ingreso_total: string | number;
 };
 
+  export type Sector = {
+  nombre_sector: string;
+  id_estadio: number;
+  capacidad_max: number;
+  activo: boolean;
+};
+
 export async function fetchPartidosMasVendidos(): Promise<MasVendidoRow[]> {
   const token =
     typeof window !== 'undefined'
@@ -244,7 +251,6 @@ export async function getSectoresPartido(
 
   return (await res.json()) as SectorPartido[];
 }
-
 export async function habilitarSectorPartido(
   id: number,
   input: HabilitarSectorPartidoInput,
@@ -261,3 +267,15 @@ export async function habilitarSectorPartido(
     throw new Error(getErrorMessage(data, 'No se pudo habilitar el sector.'));
   }
 }
+
+export async function getSectores(): Promise<Sector[]> {
+  const res = await fetch(`${API_URL}/sectores`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener los sectores.');
+  }
+
+  return (await res.json()) as Sector[];
+  }
