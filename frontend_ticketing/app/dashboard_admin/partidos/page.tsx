@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState, type FormEvent } from 'react';
 import RequireRole from '@/components/RequireRole';
 import NavbarGeneral from '@/components/navbars/NavbarGeneral';
 import {
@@ -8,8 +8,13 @@ import {
   editarPartido,
   eliminarPartido,
   getPartidos,
+  getSectores,
+  getSectoresPartido,
+  habilitarSectorPartido,
   type CreatePartidoInput,
   type Partido,
+  type Sector,
+  type SectorPartido,
 } from '@/lib/api';
 
 type FormPartido = {
@@ -33,8 +38,18 @@ function toDatetimeLocal(value: string) {
 
 export default function PartidosPage() {
   const [partidos, setPartidos] = useState<Partido[]>([]);
+  const [sectores, setSectores] = useState<Sector[]>([]);
+  const [sectoresPartido, setSectoresPartido] = useState<SectorPartido[]>([]);
+
   const [form, setForm] = useState<FormPartido>(initialForm);
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  const [partidoSectoresId, setPartidoSectoresId] = useState<number | null>(
+    null,
+  );
+  const [sectorNombre, setSectorNombre] = useState('');
+  const [sectorCosto, setSectorCosto] = useState('');
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +58,14 @@ export default function PartidosPage() {
     try {
       setError(null);
       setLoading(true);
-      const data = await getPartidos();
-      setPartidos(data);
+
+      const [partidosData, sectoresData] = await Promise.all([
+        getPartidos(),
+        getSectores(),
+      ]);
+
+      setPartidos(partidosData);
+      setSectores(sectoresData);
     } catch (err) {
       setError(
         err instanceof Error
@@ -91,7 +112,7 @@ export default function PartidosPage() {
     });
   }
 
-  async function guardarPartido(e: React.FormEvent<HTMLFormElement>) {
+  async function guardarPartido(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (new Date(form.fecha_hora) < new Date()) {
@@ -141,6 +162,50 @@ export default function PartidosPage() {
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'No se pudo eliminar el partido.',
+      );
+    }
+  }
+
+  async function abrirSectores(partido: Partido) {
+    try {
+      setError(null);
+      setPartidoSectoresId(partido.id);
+      setSectorNombre('');
+      setSectorCosto('');
+
+      const data = await getSectoresPartido(partido.id);
+      setSectoresPartido(data);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'No se pudieron cargar los sectores del partido.',
+      );
+    }
+  }
+
+  async function guardarSectorPartido(partido: Partido) {
+    if (!sectorNombre || !sectorCosto) {
+      setError('Tenés que elegir un sector y poner un costo.');
+      return;
+    }
+
+    try {
+      setError(null);
+
+      await habilitarSectorPartido(partido.id, {
+        sector_nombre_sector: sectorNombre,
+        sector_id_estadio: partido.id_estadio,
+        costo_entrada: Number(sectorCosto),
+      });
+
+      const data = await getSectoresPartido(partido.id);
+      setSectoresPartido(data);
+      setSectorNombre('');
+      setSectorCosto('');
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'No se pudo habilitar el sector.',
       );
     }
   }
@@ -310,39 +375,126 @@ export default function PartidosPage() {
 
                   <tbody>
                     {partidos.map((partido) => (
-                      <tr
-                        key={partido.id}
-                        className="border-b border-white/5 text-white"
-                      >
-                        <td className="py-3 pr-4">{partido.id}</td>
-                        <td className="py-3 pr-4">{partido.id_estadio}</td>
-                        <td className="py-3 pr-4">
-                          {partido.equipo_pais_local}
-                        </td>
-                        <td className="py-3 pr-4">
-                          {partido.equipo_pais_visitante}
-                        </td>
-                        <td className="py-3 pr-4">
-                          {new Date(partido.fecha_hora).toLocaleString()}
-                        </td>
-                        <td className="flex gap-2 py-3 pr-4">
-                          <button
-                            type="button"
-                            onClick={() => editarFila(partido)}
-                            className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-white"
-                          >
-                            Editar
-                          </button>
+                      <Fragment key={partido.id}>
+                        <tr className="border-b border-white/5 text-white">
+                          <td className="py-3 pr-4">{partido.id}</td>
+                          <td className="py-3 pr-4">{partido.id_estadio}</td>
+                          <td className="py-3 pr-4">
+                            {partido.equipo_pais_local}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {partido.equipo_pais_visitante}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {new Date(partido.fecha_hora).toLocaleString()}
+                          </td>
+                          <td className="flex gap-2 py-3 pr-4">
+                            <button
+                              type="button"
+                              onClick={() => editarFila(partido)}
+                              className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-white"
+                            >
+                              Editar
+                            </button>
 
-                          <button
-                            type="button"
-                            onClick={() => void borrarPartido(partido.id)}
-                            className="rounded-full border border-red-300/60 px-3 py-1 text-xs font-semibold text-red-200"
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
+                            <button
+                              type="button"
+                              onClick={() => void borrarPartido(partido.id)}
+                              className="rounded-full border border-red-300/60 px-3 py-1 text-xs font-semibold text-red-200"
+                            >
+                              Eliminar
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => void abrirSectores(partido)}
+                              className="rounded-full border border-gold/60 px-3 py-1 text-xs font-semibold text-gold"
+                            >
+                              Sectores
+                            </button>
+                          </td>
+                        </tr>
+
+                        {partidoSectoresId === partido.id && (
+                          <tr className="border-b border-white/10 text-white">
+                            <td colSpan={6} className="py-4">
+                              <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+                                <h3 className="mb-3 font-semibold text-white">
+                                  Sectores habilitados para partido {partido.id}
+                                </h3>
+
+                                <div className="mb-4 grid gap-3 md:grid-cols-3">
+                                  <select
+                                    value={sectorNombre}
+                                    onChange={(e) =>
+                                      setSectorNombre(e.target.value)
+                                    }
+                                    className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white"
+                                  >
+                                    <option value="">Elegir sector</option>
+
+                                    {sectores
+                                      .filter(
+                                        (sector) =>
+                                          sector.id_estadio ===
+                                          partido.id_estadio,
+                                      )
+                                      .map((sector) => (
+                                        <option
+                                          key={`${sector.id_estadio}-${sector.nombre_sector}`}
+                                          value={sector.nombre_sector}
+                                        >
+                                          {sector.nombre_sector}
+                                        </option>
+                                      ))}
+                                  </select>
+
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    step="0.01"
+                                    placeholder="Costo entrada"
+                                    value={sectorCosto}
+                                    onChange={(e) =>
+                                      setSectorCosto(e.target.value)
+                                    }
+                                    className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white placeholder:text-white/50"
+                                  />
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      void guardarSectorPartido(partido)
+                                    }
+                                    className="rounded-full bg-gold px-4 py-2 font-semibold text-night"
+                                  >
+                                    Habilitar sector
+                                  </button>
+                                </div>
+
+                                {sectoresPartido.length === 0 ? (
+                                  <p className="text-sm text-white/60">
+                                    Este partido todavía no tiene sectores
+                                    habilitados.
+                                  </p>
+                                ) : (
+                                  <ul className="space-y-2 text-sm text-white/80">
+                                    {sectoresPartido.map((sector) => (
+                                      <li
+                                        key={`${sector.sector_id_estadio}-${sector.sector_nombre_sector}`}
+                                      >
+                                        {sector.sector_nombre_sector} — $
+                                        {sector.costo_entrada} — capacidad{' '}
+                                        {sector.capacidad_max}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>
