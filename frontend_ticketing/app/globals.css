@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @theme {
   --color-pitch: #0a8a43;
   --color-pitch-dark: #064d27;
@@ -25,7 +29,123 @@
     );
 }
 
-/* Líneas de césped sutiles superpuestas */
+/* Input de formulario de tarjeta */
+.input-card {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  color: #fafafa;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input-card::placeholder { color: rgba(255,255,255,0.25); }
+.input-card:focus { border-color: rgba(255,204,41,0.5); }
+
+/* ── Tarjetas de partido ─────────────────────────────────────────────────── */
+.partido-card {
+  display: block;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0f1f3d;
+  padding: 1.25rem;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  color: inherit;
+}
+.partido-card:hover {
+  background: #162848;
+  border-color: rgba(255, 204, 41, 0.55);
+}
+.partido-card:hover .partido-card__arrow {
+  opacity: 1;
+}
+.partido-card__arrow {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #ffcc29;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* ── Tarjetas de sector ──────────────────────────────────────────────────── */
+.sector-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0f1f3d;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+
+/* ── Tarjetas del carrito ────────────────────────────────────────────────── */
+.carrito-item {
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0f1f3d;
+  padding: 1.25rem;
+}
+
+/* ── Contenedor panel (checkout, totales) ───────────────────────────────── */
+.panel-dark {
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0f1f3d;
+  padding: 1.25rem;
+}
+
+/* ── Contador de cantidad ────────────────────────────────────────────────── */
+.qty-ctrl {
+  display: flex;
+  align-items: center;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+.qty-ctrl__btn {
+  padding: 0.5rem 1rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.qty-ctrl__btn:hover { background: rgba(255,255,255,0.1); }
+.qty-ctrl__val {
+  padding: 0.5rem 1rem;
+  color: #fff;
+  font-weight: 700;
+  min-width: 2.5rem;
+  text-align: center;
+  border-left: 1px solid rgba(255,255,255,0.15);
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+
+/* ── Botón primario (gold) ───────────────────────────────────────────────── */
+.btn-gold {
+  background: #ffcc29;
+  color: #081226;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 0.9375rem;
+  width: 100%;
+}
+.btn-gold:hover { background: #e0a915; }
+.btn-gold:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Líneas de césped sutiles superpuestas */
 .wc-stripes {
   background-image: repeating-linear-gradient(
     100deg,
