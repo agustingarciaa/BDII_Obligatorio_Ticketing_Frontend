@@ -45,6 +45,18 @@ export type SectorPartido = {
   costo_entrada: number;
   capacidad_max: number;
 };
+export type Equipo = {
+  pais: string;
+  activo: boolean;
+};
+
+export type CreateEquipoInput = {
+  pais: string;
+};
+
+export type UpdateEquipoInput = {
+  pais: string;
+};
 
 export type ItemCompra = {
   sectorpartido_nombre_sector: string;
@@ -170,6 +182,85 @@ export async function eliminarPartido(id: number): Promise<void> {
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
     throw new Error(getErrorMessage(data, 'No se pudo eliminar el partido.'));
+  }
+}
+
+export async function getEquipos(): Promise<Equipo[]> {
+  const res = await fetch(`${API_URL}/equipos`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener las selecciones.');
+  }
+
+  return (await res.json()) as Equipo[];
+}
+
+export async function crearEquipo(
+  input: CreateEquipoInput,
+): Promise<Equipo> {
+  const res = await fetch(`${API_URL}/equipos`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | Equipo
+    | null;
+
+  if (!res.ok) {
+    throw new Error(
+      getErrorMessage(data as ApiErrorResponse | null,
+      'No se pudo crear la selección.'),
+    );
+  }
+
+  return data as Equipo;
+}
+
+export async function editarEquipo(
+  pais: string,
+  input: UpdateEquipoInput,
+): Promise<Equipo> {
+  const res = await fetch(`${API_URL}/equipos/${pais}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | Equipo
+    | null;
+
+  if (!res.ok) {
+    throw new Error(
+      getErrorMessage(data as ApiErrorResponse | null,
+      'No se pudo editar la selección.'),
+    );
+  }
+
+  return data as Equipo;
+}
+
+export async function eliminarEquipo(
+  pais: string,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/equipos/${pais}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    const data =
+      (await res.json().catch(() => null)) as ApiErrorResponse | null;
+
+    throw new Error(
+      getErrorMessage(data, 'No se pudo eliminar la selección.'),
+    );
   }
 }
 
