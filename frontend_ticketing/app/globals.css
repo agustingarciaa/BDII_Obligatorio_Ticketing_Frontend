@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @theme {
@@ -32,8 +34,8 @@
 /* Input de formulario de tarjeta */
 .input-card {
   width: 100%;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
   padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
@@ -41,18 +43,24 @@
   outline: none;
   transition: border-color 0.15s;
 }
-.input-card::placeholder { color: rgba(255,255,255,0.25); }
-.input-card:focus { border-color: rgba(255,204,41,0.5); }
+.input-card::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+.input-card:focus {
+  border-color: rgba(255, 204, 41, 0.5);
+}
 
 /* ── Tarjetas de partido ─────────────────────────────────────────────────── */
 .partido-card {
   display: block;
   border-radius: 1rem;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: #0f1f3d;
   padding: 1.25rem;
   text-decoration: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
   color: inherit;
 }
 .partido-card:hover {
@@ -73,7 +81,7 @@
 /* ── Tarjetas de sector ──────────────────────────────────────────────────── */
 .sector-card {
   border-radius: 1rem;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: #0f1f3d;
   padding: 1.25rem;
   display: flex;
@@ -85,7 +93,7 @@
 /* ── Tarjetas del carrito ────────────────────────────────────────────────── */
 .carrito-item {
   border-radius: 1rem;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: #0f1f3d;
   padding: 1.25rem;
 }
@@ -93,7 +101,7 @@
 /* ── Contenedor panel (checkout, totales) ───────────────────────────────── */
 .panel-dark {
   border-radius: 1rem;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   background: #0f1f3d;
   padding: 1.25rem;
 }
@@ -103,8 +111,8 @@
   display: flex;
   align-items: center;
   border-radius: 0.75rem;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
   overflow: hidden;
 }
 .qty-ctrl__btn {
@@ -118,15 +126,17 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.qty-ctrl__btn:hover { background: rgba(255,255,255,0.1); }
+.qty-ctrl__btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 .qty-ctrl__val {
   padding: 0.5rem 1rem;
   color: #fff;
   font-weight: 700;
   min-width: 2.5rem;
   text-align: center;
-  border-left: 1px solid rgba(255,255,255,0.15);
-  border-right: 1px solid rgba(255,255,255,0.15);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* ── Botón primario (gold) ───────────────────────────────────────────────── */
@@ -142,8 +152,13 @@
   font-size: 0.9375rem;
   width: 100%;
 }
-.btn-gold:hover { background: #e0a915; }
-.btn-gold:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-gold:hover {
+  background: #e0a915;
+}
+.btn-gold:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
 /* ── Líneas de césped sutiles superpuestas */
 .wc-stripes {
