@@ -2,12 +2,13 @@
 
 import RequireRole from '@/components/RequireRole';
 import NavbarGeneral from '@/components/navbars/NavbarGeneral';
+import { ADMIN_NAV_LINKS } from '@/lib/nav-links';
 
 export default function DashboardAdmin() {
   return (
     <RequireRole role="ADMIN">
       <div className="wc-hero flex min-h-full flex-1 flex-col">
-        <NavbarGeneral rol="Administrador por sede" />
+        <NavbarGeneral links={ADMIN_NAV_LINKS} />
 
         <main className="flex flex-1 flex-col gap-8 p-10">
           <section>

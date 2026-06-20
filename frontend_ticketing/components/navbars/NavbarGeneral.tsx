@@ -36,7 +36,7 @@ export default function NavbarGeneral({ links = DEFAULT_LINKS }: NavbarGeneralPr
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
   const buttonRefs = useRef<
-    Record<string, HTMLButtonElement | HTMLDivElement | null>
+    Record<string, HTMLButtonElement | HTMLDivElement | HTMLAnchorElement | null>
   >({});
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export default function NavbarGeneral({ links = DEFAULT_LINKS }: NavbarGeneralPr
               handleEnter("user", buttonRefs.current["user"] as HTMLElement)
             }
             onClick={() => {
-              router.push("/usuario");
+              router.push("/dashboard_usuario/perfil");
             }}
             aria-label="Perfil de usuario"
             className={`relative z-10 shrink-0 w-[46px] h-[46px] rounded-full flex items-center justify-center cursor-pointer transition-transform duration-150 ${

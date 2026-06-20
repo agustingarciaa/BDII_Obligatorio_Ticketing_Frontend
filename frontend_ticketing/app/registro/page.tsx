@@ -25,11 +25,22 @@ export default function Registro() {
     dir_calle: '',
     dir_numero: '',
     dir_codigo_postal: '',
-    telefono: '',
   });
+
+  const [telefonos, setTelefonos] = useState<string[]>(['']);
 
   function set(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function setTelefono(index: number, value: string) {
+    setTelefonos((tels) => tels.map((t, i) => (i === index ? value : t)));
+  }
+  function addTelefono() {
+    setTelefonos((tels) => [...tels, '']);
+  }
+  function removeTelefono(index: number) {
+    setTelefonos((tels) => (tels.length === 1 ? tels : tels.filter((_, i) => i !== index)));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,7 +59,10 @@ export default function Registro() {
         dir_calle: form.dir_calle.trim(),
         dir_numero: Number(form.dir_numero),
         dir_codigo_postal: form.dir_codigo_postal.trim(),
-        telefonos: form.telefono.trim() ? [form.telefono.trim()] : undefined,
+        telefonos: (() => {
+          const limpios = telefonos.map((t) => t.trim()).filter(Boolean);
+          return limpios.length > 0 ? limpios : undefined;
+        })(),
       });
       saveToken(token);
       router.push('/dashboard_usuario');
@@ -164,13 +178,39 @@ export default function Registro() {
               onChange={(e) => set('dir_codigo_postal', e.target.value)}
             />
           </Field>
-          <Field label="Teléfono (opcional)">
-            <input
-              className={inputClass}
-              value={form.telefono}
-              onChange={(e) => set('telefono', e.target.value)}
-            />
-          </Field>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-white/70">Teléfonos (opcional)</span>
+            <button
+              type="button"
+              onClick={addTelefono}
+              className="rounded-full border border-gold/40 px-3 py-1 text-xs font-semibold text-gold transition-colors hover:bg-gold/10"
+            >
+              + Agregar
+            </button>
+          </div>
+          {telefonos.map((tel, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                className={`${inputClass} flex-1`}
+                placeholder={`Teléfono ${i + 1}`}
+                value={tel}
+                onChange={(e) => setTelefono(i, e.target.value)}
+              />
+              {telefonos.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeTelefono(i)}
+                  aria-label="Quitar teléfono"
+                  className="shrink-0 rounded-lg border border-white/15 px-3 py-2 text-white/60 transition-colors hover:border-red-400/50 hover:text-red-300"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
         </fieldset>
 
         {error && (
