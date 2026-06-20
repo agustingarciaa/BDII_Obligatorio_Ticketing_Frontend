@@ -5,10 +5,15 @@ import NavbarGeneral from '@/components/navbars/NavbarGeneral';
 import { ADMIN_NAV_LINKS } from '@/lib/nav-links';
 
 export default function DashboardAdmin() {
+  const links = [
+  { label: "Partidos", href: "/dashboard_admin/partidos" },
+  { label: "Estadios", href: "/dashboard_admin/estadios" },
+  { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+  ];
   return (
     <RequireRole role="ADMIN">
       <div className="wc-hero flex min-h-full flex-1 flex-col">
-        <NavbarGeneral links={ADMIN_NAV_LINKS} />
+        <NavbarGeneral links={links} />
 
         <main className="flex flex-1 flex-col gap-8 p-10">
           <section>

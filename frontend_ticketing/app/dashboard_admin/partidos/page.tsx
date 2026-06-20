@@ -54,6 +54,12 @@ export default function PartidosPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const links = [
+  { label: "Partidos", href: "/dashboard_admin/partidos" },
+  { label: "Estadios", href: "/dashboard_admin/estadios" },
+  { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+  ];
+
   async function cargarPartidos() {
     try {
       setError(null);
@@ -213,7 +219,7 @@ export default function PartidosPage() {
   return (
     <RequireRole role="ADMIN">
       <div className="wc-hero flex min-h-full flex-1 flex-col">
-        <NavbarGeneral rol="Administrador por sede" />
+        <NavbarGeneral links={links} />
 
         <main className="flex flex-1 flex-col gap-8 p-10">
           <section>
