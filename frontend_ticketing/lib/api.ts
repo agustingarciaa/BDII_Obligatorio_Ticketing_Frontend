@@ -1,7 +1,7 @@
-import { getToken } from './auth';
+import { getToken } from "./auth";
 
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -19,11 +19,11 @@ function getErrorMessage(data: ApiErrorResponse | null, fallback: string) {
   return message ?? fallback;
 }
 
-function authHeaders() {
+export function authHeaders() {
   const token = getToken();
 
   return {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }
@@ -149,7 +149,7 @@ export async function getPartidos(token?: string): Promise<Partido[]> {
   const res = await fetch(`${API_URL}/partidos`, {
     headers: token ? { Authorization: `Bearer ${token}` } : authHeaders(),
   });
-  if (!res.ok) throw new Error('No se pudieron obtener los partidos.');
+  if (!res.ok) throw new Error("No se pudieron obtener los partidos.");
   return (await res.json()) as Partido[];
 }
 
@@ -157,7 +157,7 @@ export async function getPartido(id: number): Promise<Partido> {
   const res = await fetch(`${API_URL}/partidos/${id}`, {
     headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('No se pudo obtener el partido.');
+  if (!res.ok) throw new Error("No se pudo obtener el partido.");
   return (await res.json()) as Partido;
 }
 
@@ -165,7 +165,7 @@ export async function getSectoresPartido(id: number): Promise<SectorPartido[]> {
   const res = await fetch(`${API_URL}/partidos/${id}/sectores`, {
     headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('No se pudieron obtener los sectores.');
+  if (!res.ok) throw new Error("No se pudieron obtener los sectores.");
   return (await res.json()) as SectorPartido[];
 }
 
@@ -175,7 +175,7 @@ export async function crearPartido(
   input: CreatePartidoInput,
 ): Promise<Partido> {
   const res = await fetch(`${API_URL}/partidos`, {
-    method: 'POST',
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -187,7 +187,10 @@ export async function crearPartido(
 
   if (!res.ok) {
     throw new Error(
-      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el partido.'),
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo crear el partido.",
+      ),
     );
   }
 
@@ -199,7 +202,7 @@ export async function editarPartido(
   input: UpdatePartidoInput,
 ): Promise<Partido> {
   const res = await fetch(`${API_URL}/partidos/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -211,7 +214,10 @@ export async function editarPartido(
 
   if (!res.ok) {
     throw new Error(
-      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo editar el partido.'),
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo editar el partido.",
+      ),
     );
   }
 
@@ -220,13 +226,15 @@ export async function editarPartido(
 
 export async function eliminarPartido(id: number): Promise<void> {
   const res = await fetch(`${API_URL}/partidos/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: authHeaders(),
   });
 
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new Error(getErrorMessage(data, 'No se pudo eliminar el partido.'));
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, "No se pudo eliminar el partido."));
   }
 }
 
@@ -236,17 +244,15 @@ export async function getEquipos(): Promise<Equipo[]> {
   });
 
   if (!res.ok) {
-    throw new Error('No se pudieron obtener las selecciones.');
+    throw new Error("No se pudieron obtener las selecciones.");
   }
 
   return (await res.json()) as Equipo[];
 }
 
-export async function crearEquipo(
-  input: CreateEquipoInput,
-): Promise<Equipo> {
+export async function crearEquipo(input: CreateEquipoInput): Promise<Equipo> {
   const res = await fetch(`${API_URL}/equipos`, {
-    method: 'POST',
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -258,8 +264,10 @@ export async function crearEquipo(
 
   if (!res.ok) {
     throw new Error(
-      getErrorMessage(data as ApiErrorResponse | null,
-      'No se pudo crear la selección.'),
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo crear la selección.",
+      ),
     );
   }
 
@@ -271,7 +279,7 @@ export async function editarEquipo(
   input: UpdateEquipoInput,
 ): Promise<Equipo> {
   const res = await fetch(`${API_URL}/equipos/${pais}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -283,29 +291,28 @@ export async function editarEquipo(
 
   if (!res.ok) {
     throw new Error(
-      getErrorMessage(data as ApiErrorResponse | null,
-      'No se pudo editar la selección.'),
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo editar la selección.",
+      ),
     );
   }
 
   return data as Equipo;
 }
 
-export async function eliminarEquipo(
-  pais: string,
-): Promise<void> {
+export async function eliminarEquipo(pais: string): Promise<void> {
   const res = await fetch(`${API_URL}/equipos/${pais}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: authHeaders(),
   });
 
   if (!res.ok) {
-    const data =
-      (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
 
-    throw new Error(
-      getErrorMessage(data, 'No se pudo eliminar la selección.'),
-    );
+    throw new Error(getErrorMessage(data, "No se pudo eliminar la selección."));
   }
 }
 
@@ -314,14 +321,16 @@ export async function habilitarSectorPartido(
   input: HabilitarSectorPartidoInput,
 ): Promise<void> {
   const res = await fetch(`${API_URL}/partidos/${id}/sectores`, {
-    method: 'POST',
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
 
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new Error(getErrorMessage(data, 'No se pudo habilitar el sector.'));
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, "No se pudo habilitar el sector."));
   }
 }
 
@@ -329,7 +338,7 @@ export async function getSectores(): Promise<Sector[]> {
   const res = await fetch(`${API_URL}/sectores`, {
     headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('No se pudieron obtener los sectores.');
+  if (!res.ok) throw new Error("No se pudieron obtener los sectores.");
   return (await res.json()) as Sector[];
 }
 
@@ -340,7 +349,7 @@ export async function fetchPartidosMasVendidos(): Promise<MasVendidoRow[]> {
     headers: authHeaders(),
   });
   if (!res.ok) {
-    throw new Error('No se pudieron obtener los partidos más vendidos.');
+    throw new Error("No se pudieron obtener los partidos más vendidos.");
   }
   return res.json() as Promise<MasVendidoRow[]>;
 }
@@ -349,7 +358,7 @@ export async function fetchPartidosMasVendidos(): Promise<MasVendidoRow[]> {
 
 export type Entrada = {
   id_boleto: number;
-  estado: 'activo' | 'vencida' | 'utilizada';
+  estado: "activo" | "vencida" | "utilizada";
   sectorpartido_nombre_sector: string;
   sectorpartido_id_estadio: number;
   sectorpartido_id_evento: number;
@@ -364,7 +373,7 @@ export type Transferencia = {
   entrada_id_boleto: number;
   origen_id_usuario: number;
   destino_id_usuario: number;
-  estado: 'pendiente' | 'aceptada' | 'rechazada';
+  estado: "pendiente" | "aceptada" | "rechazada";
   fecha: string;
 };
 
@@ -408,7 +417,7 @@ export async function getMisEntradas(token: string): Promise<Entrada[]> {
   const res = await fetch(`${API_URL}/entradas/mis-entradas`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error('No se pudieron cargar las entradas.');
+  if (!res.ok) throw new Error("No se pudieron cargar las entradas.");
   return res.json() as Promise<Entrada[]>;
 }
 
@@ -417,19 +426,17 @@ export async function comprarEntradas(
   items: ItemCompra[],
 ): Promise<unknown> {
   const res = await fetch(`${API_URL}/entradas/comprar`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ items }),
   });
   const data = (await res.json()) as { message?: string | string[] };
   if (!res.ok) {
-    const msg = Array.isArray(data?.message)
-      ? data.message[0]
-      : data?.message;
-    throw new Error(msg ?? 'Error al procesar la compra.');
+    const msg = Array.isArray(data?.message) ? data.message[0] : data?.message;
+    throw new Error(msg ?? "Error al procesar la compra.");
   }
   return data;
 }
@@ -438,68 +445,93 @@ export async function getMisCompras(token: string): Promise<Compra[]> {
   const res = await fetch(`${API_URL}/entradas/mis-compras`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error('No se pudieron cargar las compras.');
+  if (!res.ok) throw new Error("No se pudieron cargar las compras.");
   return res.json() as Promise<Compra[]>;
 }
 
-export async function generarQR(token: string, id_boleto: number): Promise<{ qr_token: string; vigencia_segundos: number }> {
+export async function generarQR(
+  token: string,
+  id_boleto: number,
+): Promise<{ qr_token: string; vigencia_segundos: number }> {
   const res = await fetch(`${API_URL}/validacion/qr/${id_boleto}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const data = (await res.json()) as { qr_token?: string; vigencia_segundos?: number; message?: string | string[] };
+  const data = (await res.json()) as {
+    qr_token?: string;
+    vigencia_segundos?: number;
+    message?: string | string[];
+  };
   if (!res.ok) {
     const msg = Array.isArray(data?.message) ? data.message[0] : data?.message;
-    throw new Error(msg ?? 'Error al generar el QR.');
+    throw new Error(msg ?? "Error al generar el QR.");
   }
   return data as { qr_token: string; vigencia_segundos: number };
 }
 
 // ── Transferencias ───────────────────────────────────────────────────────────
 
-export async function getMisTransferencias(token: string): Promise<{ enviadas: Transferencia[]; recibidas: Transferencia[] }> {
+export async function getMisTransferencias(
+  token: string,
+): Promise<{ enviadas: Transferencia[]; recibidas: Transferencia[] }> {
   const res = await fetch(`${API_URL}/entradas/mis-transferencias`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error('No se pudieron cargar las transferencias.');
-  return res.json() as Promise<{ enviadas: Transferencia[]; recibidas: Transferencia[] }>;
+  if (!res.ok) throw new Error("No se pudieron cargar las transferencias.");
+  return res.json() as Promise<{
+    enviadas: Transferencia[];
+    recibidas: Transferencia[];
+  }>;
 }
 
-export async function transferirEntrada(token: string, id_boleto: number, destino_id_usuario: number): Promise<unknown> {
+export async function transferirEntrada(
+  token: string,
+  id_boleto: number,
+  destino_id_usuario: number,
+): Promise<unknown> {
   const res = await fetch(`${API_URL}/entradas/transferir`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ id_boleto, destino_id_usuario }),
   });
   const data = (await res.json()) as { message?: string | string[] };
   if (!res.ok) {
     const msg = Array.isArray(data?.message) ? data.message[0] : data?.message;
-    throw new Error(msg ?? 'Error al transferir la entrada.');
+    throw new Error(msg ?? "Error al transferir la entrada.");
   }
   return data;
 }
 
-export async function aceptarTransferencia(token: string, id: number): Promise<unknown> {
+export async function aceptarTransferencia(
+  token: string,
+  id: number,
+): Promise<unknown> {
   const res = await fetch(`${API_URL}/entradas/transferencias/${id}/aceptar`, {
-    method: 'PUT',
+    method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
   const data = (await res.json()) as { message?: string | string[] };
   if (!res.ok) {
     const msg = Array.isArray(data?.message) ? data.message[0] : data?.message;
-    throw new Error(msg ?? 'Error al aceptar la transferencia.');
+    throw new Error(msg ?? "Error al aceptar la transferencia.");
   }
   return data;
 }
 
-export async function rechazarTransferencia(token: string, id: number): Promise<unknown> {
+export async function rechazarTransferencia(
+  token: string,
+  id: number,
+): Promise<unknown> {
   const res = await fetch(`${API_URL}/entradas/transferencias/${id}/rechazar`, {
-    method: 'PUT',
+    method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
   const data = (await res.json()) as { message?: string | string[] };
   if (!res.ok) {
     const msg = Array.isArray(data?.message) ? data.message[0] : data?.message;
-    throw new Error(msg ?? 'Error al rechazar la transferencia.');
+    throw new Error(msg ?? "Error al rechazar la transferencia.");
   }
   return data;
 }
@@ -510,28 +542,44 @@ export async function getMiPerfil(token: string): Promise<PerfilUsuario> {
   const res = await fetch(`${API_URL}/usuarios/info`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) throw new Error('No se pudo cargar el perfil.');
+  if (!res.ok) throw new Error("No se pudo cargar el perfil.");
   return res.json() as Promise<PerfilUsuario>;
 }
 
-export async function modificarPerfil(token: string, data: ModificarPerfilInput): Promise<void> {
+export async function modificarPerfil(
+  token: string,
+  data: ModificarPerfilInput,
+): Promise<void> {
   const res = await fetch(`${API_URL}/usuarios/info/modificar`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(data),
   });
-  const body = (await res.json().catch(() => null)) as { message?: string | string[] } | null;
+  const body = (await res.json().catch(() => null)) as {
+    message?: string | string[];
+  } | null;
   if (!res.ok) {
-    const msg = Array.isArray(body?.message) ? body!.message![0] : body?.message;
-    throw new Error(msg ?? 'Error al guardar los cambios.');
+    const msg = Array.isArray(body?.message)
+      ? body!.message![0]
+      : body?.message;
+    throw new Error(msg ?? "Error al guardar los cambios.");
   }
 }
 
-export async function buscarUsuarioPorMail(token: string, mail: string): Promise<UsuarioBusqueda[]> {
-  const res = await fetch(`${API_URL}/usuarios/buscar?mail=${encodeURIComponent(mail)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error('Error al buscar usuario.');
+export async function buscarUsuarioPorMail(
+  token: string,
+  mail: string,
+): Promise<UsuarioBusqueda[]> {
+  const res = await fetch(
+    `${API_URL}/usuarios/buscar?mail=${encodeURIComponent(mail)}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  if (!res.ok) throw new Error("Error al buscar usuario.");
   return res.json() as Promise<UsuarioBusqueda[]>;
 }
 
@@ -640,21 +688,18 @@ export type RegisterInput = {
   telefonos?: string[];
 };
 
-export async function login(
-  mail: string,
-  contrasena: string,
-): Promise<string> {
+export async function login(mail: string, contrasena: string): Promise<string> {
   const res = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ mail, contrasena }),
   });
 
   if (!res.ok) {
     if (res.status === 401) {
-      throw new Error('Credenciales inválidas');
+      throw new Error("Credenciales inválidas");
     }
-    throw new Error('No se pudo iniciar sesión. Intentá de nuevo.');
+    throw new Error("No se pudo iniciar sesión. Intentá de nuevo.");
   }
 
   const data = (await res.json()) as { access_token: string };
@@ -665,19 +710,21 @@ export async function login(
 // El backend devuelve el token ya logueado como CLIENTE.
 export async function register(input: RegisterInput): Promise<string> {
   const res = await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
 
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
 
     if (res.status === 409) {
-      throw new Error(getErrorMessage(data, 'El usuario ya está registrado.'));
+      throw new Error(getErrorMessage(data, "El usuario ya está registrado."));
     }
 
-    throw new Error(getErrorMessage(data, 'No se pudo completar el registro.'));
+    throw new Error(getErrorMessage(data, "No se pudo completar el registro."));
   }
 
   const data = (await res.json()) as { access_token: string };
