@@ -9,6 +9,8 @@ export default function DashboardAdmin() {
   { label: "Partidos", href: "/dashboard_admin/partidos" },
   { label: "Estadios", href: "/dashboard_admin/estadios" },
   { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+  { label: "Operaciones", href: "/dashboard_admin/operaciones"},
+
   ];
   return (
     <RequireRole role="ADMIN">
