@@ -29,43 +29,45 @@ export default function Carrusel() {
 
   return (
     <section>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Partidos más populares</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setIdx((p) => Math.max(p - 1, 0))}
-            disabled={idx === 0}
-            className="flex size-8 items-center justify-center rounded-full border border-white/20 text-white/70 transition hover:border-gold hover:text-gold disabled:opacity-30"
-            aria-label="Anterior"
-          >
-            ‹
-          </button>
-          <button
-            onClick={() => setIdx((p) => Math.min(p + 1, max))}
-            disabled={idx === max}
-            className="flex size-8 items-center justify-center rounded-full border border-white/20 text-white/70 transition hover:border-gold hover:text-gold disabled:opacity-30"
-            aria-label="Siguiente"
-          >
-            ›
-          </button>
-        </div>
-      </div>
+      <h2 className="mb-4 text-xl font-bold text-white">
+        Partidos más populares
+      </h2>
 
-      <div className="overflow-hidden">
-        <div
-          className="flex transition-transform duration-300 ease-in-out"
-          style={{ transform: `translateX(-${idx * (100 / visible)}%)` }}
+      <div className="relative">
+        <button
+          onClick={() => setIdx((p) => Math.max(p - 1, 0))}
+          disabled={idx === 0}
+          className="absolute left-0 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-gold text-lg font-bold text-night shadow-lg transition hover:bg-gold-deep disabled:opacity-30 pb-5"
+          aria-label="Anterior"
         >
-          {partidos.map((p) => (
-            <div
-              key={p.id}
-              className="min-w-0 shrink-0 px-2"
-              style={{ width: `${100 / visible}%` }}
-            >
-              <PartidoCard partido={p} />
-            </div>
-          ))}
+          ‹
+        </button>
+
+        <div className="overflow-hidden">
+          <div
+            className="flex transition-transform duration-300 ease-in-out"
+            style={{ transform: `translateX(-${idx * (100 / visible)}%)` }}
+          >
+            {partidos.map((p) => (
+              <div
+                key={p.id}
+                className="min-w-0 shrink-0 px-2"
+                style={{ width: `${100 / visible}%` }}
+              >
+                <PartidoCard partido={p} />
+              </div>
+            ))}
+          </div>
         </div>
+
+        <button
+          onClick={() => setIdx((p) => Math.min(p + 1, max))}
+          disabled={idx === max}
+          className="absolute right-0 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-gold text-lg font-bold text-night shadow-lg transition hover:bg-gold-deep disabled:opacity-30"
+          aria-label="Siguiente"
+        >
+          ›
+        </button>
       </div>
     </section>
   );

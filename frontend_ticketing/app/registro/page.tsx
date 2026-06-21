@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { register } from '@/lib/api';
-import { saveToken } from '@/lib/auth';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { register } from "@/lib/api";
+import { saveToken } from "@/lib/auth";
 
 const inputClass =
-  'rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white outline-none transition-colors focus:border-gold';
+  "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-white outline-none transition-colors focus:border-gold";
 
 export default function Registro() {
   const router = useRouter();
@@ -15,19 +15,19 @@ export default function Registro() {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
-    doc_pais: '',
-    doc_tipo: 'CI',
-    doc_numero: '',
-    mail: '',
-    contrasena: '',
-    dir_pais: '',
-    dir_localidad: '',
-    dir_calle: '',
-    dir_numero: '',
-    dir_codigo_postal: '',
+    doc_pais: "",
+    doc_tipo: "CI",
+    doc_numero: "",
+    mail: "",
+    contrasena: "",
+    dir_pais: "",
+    dir_localidad: "",
+    dir_calle: "",
+    dir_numero: "",
+    dir_codigo_postal: "",
   });
 
-  const [telefonos, setTelefonos] = useState<string[]>(['']);
+  const [telefonos, setTelefonos] = useState<string[]>([""]);
 
   function set(field: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -37,10 +37,12 @@ export default function Registro() {
     setTelefonos((tels) => tels.map((t, i) => (i === index ? value : t)));
   }
   function addTelefono() {
-    setTelefonos((tels) => [...tels, '']);
+    setTelefonos((tels) => [...tels, ""]);
   }
   function removeTelefono(index: number) {
-    setTelefonos((tels) => (tels.length === 1 ? tels : tels.filter((_, i) => i !== index)));
+    setTelefonos((tels) =>
+      tels.length === 1 ? tels : tels.filter((_, i) => i !== index),
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -65,9 +67,9 @@ export default function Registro() {
         })(),
       });
       saveToken(token);
-      router.push('/dashboard_usuario');
+      router.push("/dashboard_usuario");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error inesperado.');
+      setError(err instanceof Error ? err.message : "Error inesperado.");
     } finally {
       setLoading(false);
     }
@@ -86,13 +88,13 @@ export default function Registro() {
           Registrate para comprar entradas del Mundial 2026.
         </p>
 
-        <fieldset className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <fieldset className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="País del documento">
             <input
               className={inputClass}
               required
               value={form.doc_pais}
-              onChange={(e) => set('doc_pais', e.target.value)}
+              onChange={(e) => set("doc_pais", e.target.value)}
             />
           </Field>
           <Field label="Tipo">
@@ -100,18 +102,18 @@ export default function Registro() {
               className={inputClass}
               required
               value={form.doc_tipo}
-              onChange={(e) => set('doc_tipo', e.target.value)}
-            />
-          </Field>
-          <Field label="Número de documento">
-            <input
-              className={inputClass}
-              required
-              value={form.doc_numero}
-              onChange={(e) => set('doc_numero', e.target.value)}
+              onChange={(e) => set("doc_tipo", e.target.value)}
             />
           </Field>
         </fieldset>
+        <Field label="Número de documento">
+          <input
+            className={inputClass}
+            required
+            value={form.doc_numero}
+            onChange={(e) => set("doc_numero", e.target.value)}
+          />
+        </Field>
 
         <Field label="Mail">
           <input
@@ -119,7 +121,7 @@ export default function Registro() {
             className={inputClass}
             required
             value={form.mail}
-            onChange={(e) => set('mail', e.target.value)}
+            onChange={(e) => set("mail", e.target.value)}
           />
         </Field>
 
@@ -129,7 +131,7 @@ export default function Registro() {
             className={inputClass}
             required
             value={form.contrasena}
-            onChange={(e) => set('contrasena', e.target.value)}
+            onChange={(e) => set("contrasena", e.target.value)}
           />
           <span className="text-xs text-white/50">
             Mínimo 8 caracteres, con mayúscula, minúscula y número.
@@ -142,7 +144,7 @@ export default function Registro() {
               className={inputClass}
               required
               value={form.dir_pais}
-              onChange={(e) => set('dir_pais', e.target.value)}
+              onChange={(e) => set("dir_pais", e.target.value)}
             />
           </Field>
           <Field label="Localidad">
@@ -150,7 +152,7 @@ export default function Registro() {
               className={inputClass}
               required
               value={form.dir_localidad}
-              onChange={(e) => set('dir_localidad', e.target.value)}
+              onChange={(e) => set("dir_localidad", e.target.value)}
             />
           </Field>
           <Field label="Calle">
@@ -158,7 +160,7 @@ export default function Registro() {
               className={inputClass}
               required
               value={form.dir_calle}
-              onChange={(e) => set('dir_calle', e.target.value)}
+              onChange={(e) => set("dir_calle", e.target.value)}
             />
           </Field>
           <Field label="Número">
@@ -167,7 +169,7 @@ export default function Registro() {
               className={inputClass}
               required
               value={form.dir_numero}
-              onChange={(e) => set('dir_numero', e.target.value)}
+              onChange={(e) => set("dir_numero", e.target.value)}
             />
           </Field>
           <Field label="Código postal">
@@ -175,7 +177,7 @@ export default function Registro() {
               className={inputClass}
               required
               value={form.dir_codigo_postal}
-              onChange={(e) => set('dir_codigo_postal', e.target.value)}
+              onChange={(e) => set("dir_codigo_postal", e.target.value)}
             />
           </Field>
         </fieldset>
@@ -224,7 +226,7 @@ export default function Registro() {
           disabled={loading}
           className="mt-1 rounded-full bg-gold px-5 py-2.5 font-semibold text-night transition-colors hover:bg-gold-deep disabled:opacity-50"
         >
-          {loading ? 'Creando cuenta…' : 'Crear cuenta y comprar entradas'}
+          {loading ? "Creando cuenta…" : "Crear cuenta y comprar entradas"}
         </button>
 
         <Link

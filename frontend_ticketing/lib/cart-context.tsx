@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -6,7 +6,7 @@ import {
   useContext,
   useMemo,
   useState,
-} from 'react';
+} from "react";
 
 export const MAX_ENTRADAS = 5;
 export const TASA_COMISION = 0.05;
@@ -25,9 +25,16 @@ type CartCtx = {
   subtotal: number;
   total: number;
   totalCantidad: number;
-  agregar: (item: Omit<CartItem, 'cantidad'>, cantidad: number) => string | null;
+  agregar: (
+    item: Omit<CartItem, "cantidad">,
+    cantidad: number,
+  ) => string | null;
   quitar: (id_evento: number, nombre_sector: string) => void;
-  cambiarCantidad: (id_evento: number, nombre_sector: string, cantidad: number) => string | null;
+  cambiarCantidad: (
+    id_evento: number,
+    nombre_sector: string,
+    cantidad: number,
+  ) => string | null;
   vaciar: () => void;
 };
 
@@ -52,7 +59,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const agregar = useCallback(
-    (item: Omit<CartItem, 'cantidad'>, cantidad: number): string | null => {
+    (item: Omit<CartItem, "cantidad">, cantidad: number): string | null => {
       let error: string | null = null;
       setItems((prev) => {
         const idx = prev.findIndex(
@@ -84,7 +91,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const cambiarCantidad = useCallback(
-    (id_evento: number, nombre_sector: string, cantidad: number): string | null => {
+    (
+      id_evento: number,
+      nombre_sector: string,
+      cantidad: number,
+    ): string | null => {
       let error: string | null = null;
       setItems((prev) => {
         const otrasCantidades = prev
@@ -129,8 +140,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const vaciar = useCallback(() => setItems([]), []);
 
   const value = useMemo(
-    () => ({ items, subtotal, total, totalCantidad, agregar, quitar, cambiarCantidad, vaciar }),
-    [items, subtotal, total, totalCantidad, agregar, quitar, cambiarCantidad, vaciar],
+    () => ({
+      items,
+      subtotal,
+      total,
+      totalCantidad,
+      agregar,
+      quitar,
+      cambiarCantidad,
+      vaciar,
+    }),
+    [
+      items,
+      subtotal,
+      total,
+      totalCantidad,
+      agregar,
+      quitar,
+      cambiarCantidad,
+      vaciar,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -138,6 +167,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 export function useCart(): CartCtx {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart debe usarse dentro de <CartProvider>');
+  if (!ctx) throw new Error("useCart debe usarse dentro de <CartProvider>");
   return ctx;
 }

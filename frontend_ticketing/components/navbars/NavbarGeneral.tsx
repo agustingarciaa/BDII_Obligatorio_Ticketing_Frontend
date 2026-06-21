@@ -85,7 +85,7 @@ export default function NavbarGeneral({ links = DEFAULT_LINKS }: NavbarGeneralPr
       `}</style>
 
       {/* Wrapper: centra el nav horizontalmente */}
-      <div className="w-full flex justify-center px-6 py-4">
+      <div className="sticky top-0 z-50 w-full flex justify-center px-6 py-4">
         <nav
           ref={navRef}
           onMouseLeave={handleLeave}
