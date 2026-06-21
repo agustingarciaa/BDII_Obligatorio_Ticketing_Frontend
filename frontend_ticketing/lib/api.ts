@@ -96,6 +96,51 @@ export type MasVendidoRow = {
   total_entradas_vendidas: number;
   ingreso_total: string | number;
 };
+export type CompraAdmin = {
+  id_venta: number;
+  fecha: string;
+  estado: string;
+  monto_total: string;
+  tasa_comision: string;
+  id_usuario: number;
+  mail: string;
+  cantidad_entradas: number;
+};
+
+export type TransferenciaAdmin = {
+  id_transferencia: number;
+  fecha: string;
+  estado: string;
+  entrada_id_boleto: number;
+  origen_id_usuario: number;
+  origen_mail: string;
+  destino_id_usuario: number;
+  destino_mail: string;
+};
+
+export async function getAdminCompras(): Promise<CompraAdmin[]> {
+  const res = await fetch(`${API_URL}/entradas/admin/compras`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener las compras.');
+  }
+
+  return (await res.json()) as CompraAdmin[];
+}
+
+export async function getAdminTransferencias(): Promise<TransferenciaAdmin[]> {
+  const res = await fetch(`${API_URL}/entradas/admin/transferencias`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener las transferencias.');
+  }
+
+  return (await res.json()) as TransferenciaAdmin[];
+}
 
 // ── Partidos (lectura) ───────────────────────────────────────────────────────
 // token es opcional: si no se pasa, se usa el token guardado (authHeaders()).
@@ -536,6 +581,95 @@ export async function buscarUsuarioPorMail(
   );
   if (!res.ok) throw new Error("Error al buscar usuario.");
   return res.json() as Promise<UsuarioBusqueda[]>;
+}
+
+// ── Estadios ─────────────────────────────────────────────────────────────────────
+
+export type Estadio = {
+  id_estadio: number;
+  nombre: string;
+  pais: string;
+  ciudad: string;
+  activo: boolean;
+};
+
+export type CreateEstadioInput = {
+  nombre: string;
+  pais: string;
+  ciudad: string;
+};
+
+export type UpdateEstadioInput = Partial<CreateEstadioInput>;
+
+export async function getEstadios(): Promise<Estadio[]> {
+  const res = await fetch(`${API_URL}/estadios`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener los estadios.');
+  }
+
+  return (await res.json()) as Estadio[];
+}
+
+export async function crearEstadio(
+  input: CreateEstadioInput,
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/estadios`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | { message: string }
+    | null;
+
+  if (!res.ok) {
+    throw new Error(
+      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el estadio.'),
+    );
+  }
+
+  return data as { message: string };
+}
+
+export async function editarEstadio(
+  id: number,
+  input: UpdateEstadioInput,
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/estadios/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | { message: string }
+    | null;
+
+  if (!res.ok) {
+    throw new Error(
+      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo editar el estadio.'),
+    );
+  }
+
+  return data as { message: string };
+}
+
+export async function eliminarEstadio(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/estadios/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, 'No se pudo eliminar el estadio.'));
+  }
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────

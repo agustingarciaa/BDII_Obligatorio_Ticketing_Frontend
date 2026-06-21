@@ -6,10 +6,12 @@ import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 
 export default function DashboardAdmin() {
   const links = [
-    { label: "Partidos", href: "/dashboard_admin/partidos" },
-    { label: "Estadios", href: "/dashboard_admin/estadios" },
-    { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+  { label: "Partidos", href: "/dashboard_admin/partidos" },
+  { label: "Estadios", href: "/dashboard_admin/estadios" },
+  { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+  { label: "Operaciones", href: "/dashboard_admin/operaciones"},
     { label: "Estadisticas", href: "/dashboard_admin/estadisticas" },
+
   ];
   return (
     <RequireRole role="ADMIN">
