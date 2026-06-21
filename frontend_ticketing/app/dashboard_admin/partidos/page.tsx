@@ -33,7 +33,10 @@ const initialForm: FormPartido = {
 
 function toDatetimeLocal(value: string) {
   const date = new Date(value);
-  return date.toISOString().slice(0, 16);
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60_000);
+
+  return localDate.toISOString().slice(0, 16);
 }
 
 export default function PartidosPage() {
@@ -58,6 +61,8 @@ export default function PartidosPage() {
   { label: "Partidos", href: "/dashboard_admin/partidos" },
   { label: "Estadios", href: "/dashboard_admin/estadios" },
   { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+  { label: "Operaciones", href: "/dashboard_admin/operaciones"},
+
   ];
 
   async function cargarPartidos() {
@@ -101,7 +106,7 @@ export default function PartidosPage() {
     return new Set(partidos.map((partido) => partido.id_estadio)).size;
   }, [partidos]);
 
-  const minFechaHora = new Date().toISOString().slice(0, 16);
+  const minFechaHora = toDatetimeLocal(new Date().toISOString());
 
   function limpiarFormulario() {
     setForm(initialForm);
@@ -130,7 +135,7 @@ export default function PartidosPage() {
       id_estadio: Number(form.id_estadio),
       equipo_pais_local: form.equipo_pais_local.trim(),
       equipo_pais_visitante: form.equipo_pais_visitante.trim(),
-      fecha_hora: form.fecha_hora,
+      fecha_hora: `${form.fecha_hora}:00`.replace('T', ' '),
     };
 
     try {
@@ -392,7 +397,13 @@ export default function PartidosPage() {
                             {partido.equipo_pais_visitante}
                           </td>
                           <td className="py-3 pr-4">
-                            {new Date(partido.fecha_hora).toLocaleString()}
+                            {new Date(partido.fecha_hora).toLocaleString('es-UY', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
                           </td>
                           <td className="flex gap-2 py-3 pr-4">
                             <button
@@ -435,7 +446,7 @@ export default function PartidosPage() {
                                     onChange={(e) =>
                                       setSectorNombre(e.target.value)
                                     }
-                                    className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white"
+                                    className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-black"
                                   >
                                     <option value="">Elegir sector</option>
 

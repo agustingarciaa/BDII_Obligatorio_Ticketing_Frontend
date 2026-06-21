@@ -96,6 +96,51 @@ export type MasVendidoRow = {
   total_entradas_vendidas: number;
   ingreso_total: string | number;
 };
+export type CompraAdmin = {
+  id_venta: number;
+  fecha: string;
+  estado: string;
+  monto_total: string;
+  tasa_comision: string;
+  id_usuario: number;
+  mail: string;
+  cantidad_entradas: number;
+};
+
+export type TransferenciaAdmin = {
+  id_transferencia: number;
+  fecha: string;
+  estado: string;
+  entrada_id_boleto: number;
+  origen_id_usuario: number;
+  origen_mail: string;
+  destino_id_usuario: number;
+  destino_mail: string;
+};
+
+export async function getAdminCompras(): Promise<CompraAdmin[]> {
+  const res = await fetch(`${API_URL}/entradas/admin/compras`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener las compras.');
+  }
+
+  return (await res.json()) as CompraAdmin[];
+}
+
+export async function getAdminTransferencias(): Promise<TransferenciaAdmin[]> {
+  const res = await fetch(`${API_URL}/entradas/admin/transferencias`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener las transferencias.');
+  }
+
+  return (await res.json()) as TransferenciaAdmin[];
+}
 
 // ── Partidos (lectura) ───────────────────────────────────────────────────────
 // token es opcional: si no se pasa, se usa el token guardado (authHeaders()).
