@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Fragment, useEffect, useMemo, useState, type FormEvent } from 'react';
-import RequireRole from '@/components/RequireRole';
-import NavbarGeneral from '@/components/navbars/NavbarGeneral';
+import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
+import RequireRole from "@/components/RequireRole";
+import NavbarGeneral from "@/components/navbars/NavbarGeneral";
 import {
   crearPartido,
   editarPartido,
@@ -15,7 +15,7 @@ import {
   type Partido,
   type Sector,
   type SectorPartido,
-} from '@/lib/api';
+} from "@/lib/api";
 
 type FormPartido = {
   id_estadio: string;
@@ -25,10 +25,10 @@ type FormPartido = {
 };
 
 const initialForm: FormPartido = {
-  id_estadio: '',
-  equipo_pais_local: '',
-  equipo_pais_visitante: '',
-  fecha_hora: '',
+  id_estadio: "",
+  equipo_pais_local: "",
+  equipo_pais_visitante: "",
+  fecha_hora: "",
 };
 
 function toDatetimeLocal(value: string) {
@@ -47,17 +47,17 @@ export default function PartidosPage() {
   const [partidoSectoresId, setPartidoSectoresId] = useState<number | null>(
     null,
   );
-  const [sectorNombre, setSectorNombre] = useState('');
-  const [sectorCosto, setSectorCosto] = useState('');
+  const [sectorNombre, setSectorNombre] = useState("");
+  const [sectorCosto, setSectorCosto] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const links = [
-  { label: "Partidos", href: "/dashboard_admin/partidos" },
-  { label: "Estadios", href: "/dashboard_admin/estadios" },
-  { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+    { label: "Partidos", href: "/dashboard_admin/partidos" },
+    { label: "Estadios", href: "/dashboard_admin/estadios" },
+    { label: "Selecciones", href: "/dashboard_admin/selecciones" },
   ];
 
   async function cargarPartidos() {
@@ -76,7 +76,7 @@ export default function PartidosPage() {
       setError(
         err instanceof Error
           ? err.message
-          : 'No se pudieron cargar los partidos.',
+          : "No se pudieron cargar los partidos.",
       );
     } finally {
       setLoading(false);
@@ -122,7 +122,7 @@ export default function PartidosPage() {
     e.preventDefault();
 
     if (new Date(form.fecha_hora) < new Date()) {
-      setError('La fecha del partido no puede ser anterior a la fecha actual.');
+      setError("La fecha del partido no puede ser anterior a la fecha actual.");
       return;
     }
 
@@ -147,7 +147,7 @@ export default function PartidosPage() {
       await cargarPartidos();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'No se pudo guardar el partido.',
+        err instanceof Error ? err.message : "No se pudo guardar el partido.",
       );
     } finally {
       setSaving(false);
@@ -167,7 +167,7 @@ export default function PartidosPage() {
       await cargarPartidos();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'No se pudo eliminar el partido.',
+        err instanceof Error ? err.message : "No se pudo eliminar el partido.",
       );
     }
   }
@@ -176,8 +176,8 @@ export default function PartidosPage() {
     try {
       setError(null);
       setPartidoSectoresId(partido.id);
-      setSectorNombre('');
-      setSectorCosto('');
+      setSectorNombre("");
+      setSectorCosto("");
 
       const data = await getSectoresPartido(partido.id);
       setSectoresPartido(data);
@@ -185,14 +185,14 @@ export default function PartidosPage() {
       setError(
         err instanceof Error
           ? err.message
-          : 'No se pudieron cargar los sectores del partido.',
+          : "No se pudieron cargar los sectores del partido.",
       );
     }
   }
 
   async function guardarSectorPartido(partido: Partido) {
     if (!sectorNombre || !sectorCosto) {
-      setError('Tenés que elegir un sector y poner un costo.');
+      setError("Tenés que elegir un sector y poner un costo.");
       return;
     }
 
@@ -207,11 +207,11 @@ export default function PartidosPage() {
 
       const data = await getSectoresPartido(partido.id);
       setSectoresPartido(data);
-      setSectorNombre('');
-      setSectorCosto('');
+      setSectorNombre("");
+      setSectorCosto("");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'No se pudo habilitar el sector.',
+        err instanceof Error ? err.message : "No se pudo habilitar el sector.",
       );
     }
   }
@@ -259,7 +259,7 @@ export default function PartidosPage() {
           <section className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
             <h2 className="text-xl font-bold text-white">
               {editingId === null
-                ? 'Crear partido'
+                ? "Crear partido"
                 : `Editar partido ${editingId}`}
             </h2>
 
@@ -318,10 +318,10 @@ export default function PartidosPage() {
                   className="rounded-full bg-gold px-5 py-2 font-semibold text-night disabled:opacity-50"
                 >
                   {saving
-                    ? 'Guardando...'
+                    ? "Guardando..."
                     : editingId === null
-                      ? 'Crear partido'
-                      : 'Guardar cambios'}
+                      ? "Crear partido"
+                      : "Guardar cambios"}
                 </button>
 
                 {editingId !== null && (
@@ -490,7 +490,7 @@ export default function PartidosPage() {
                                         key={`${sector.sector_id_estadio}-${sector.sector_nombre_sector}`}
                                       >
                                         {sector.sector_nombre_sector} — $
-                                        {sector.costo_entrada} — capacidad{' '}
+                                        {sector.costo_entrada} — capacidad{" "}
                                         {sector.capacidad_max}
                                       </li>
                                     ))}

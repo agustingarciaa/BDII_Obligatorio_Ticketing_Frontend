@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
-import RequireRole from '@/components/RequireRole';
-import NavbarGeneral from '@/components/navbars/NavbarGeneral';
-import { ADMIN_NAV_LINKS } from '@/lib/nav-links';
+import RequireRole from "@/components/RequireRole";
+import NavbarGeneral from "@/components/navbars/NavbarGeneral";
+import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 
 export default function DashboardAdmin() {
   const links = [
-  { label: "Partidos", href: "/dashboard_admin/partidos" },
-  { label: "Estadios", href: "/dashboard_admin/estadios" },
-  { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+    { label: "Partidos", href: "/dashboard_admin/partidos" },
+    { label: "Estadios", href: "/dashboard_admin/estadios" },
+    { label: "Selecciones", href: "/dashboard_admin/selecciones" },
+    { label: "Estadisticas", href: "/dashboard_admin/estadisticas" },
   ];
   return (
     <RequireRole role="ADMIN">
-      <div className="wc-hero flex min-h-full flex-1 flex-col">
+      <div className="wc-hero  min-h-full flex flex-1 flex-col">
         <NavbarGeneral links={links} />
 
         <main className="flex flex-1 flex-col gap-8 p-10">
