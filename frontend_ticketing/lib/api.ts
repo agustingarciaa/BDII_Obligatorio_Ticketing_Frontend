@@ -535,6 +535,95 @@ export async function buscarUsuarioPorMail(token: string, mail: string): Promise
   return res.json() as Promise<UsuarioBusqueda[]>;
 }
 
+// ── Estadios ─────────────────────────────────────────────────────────────────────
+
+export type Estadio = {
+  id_estadio: number;
+  nombre: string;
+  pais: string;
+  ciudad: string;
+  activo: boolean;
+};
+
+export type CreateEstadioInput = {
+  nombre: string;
+  pais: string;
+  ciudad: string;
+};
+
+export type UpdateEstadioInput = Partial<CreateEstadioInput>;
+
+export async function getEstadios(): Promise<Estadio[]> {
+  const res = await fetch(`${API_URL}/estadios`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error('No se pudieron obtener los estadios.');
+  }
+
+  return (await res.json()) as Estadio[];
+}
+
+export async function crearEstadio(
+  input: CreateEstadioInput,
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/estadios`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | { message: string }
+    | null;
+
+  if (!res.ok) {
+    throw new Error(
+      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el estadio.'),
+    );
+  }
+
+  return data as { message: string };
+}
+
+export async function editarEstadio(
+  id: number,
+  input: UpdateEstadioInput,
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/estadios/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | { message: string }
+    | null;
+
+  if (!res.ok) {
+    throw new Error(
+      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo editar el estadio.'),
+    );
+  }
+
+  return data as { message: string };
+}
+
+export async function eliminarEstadio(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/estadios/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, 'No se pudo eliminar el estadio.'));
+  }
+}
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 export type RegisterInput = {
