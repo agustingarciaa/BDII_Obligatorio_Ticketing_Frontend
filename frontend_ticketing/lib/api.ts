@@ -414,6 +414,57 @@ export async function eliminarDispositivo(id: number): Promise<void> {
   }
 }
 
+// ── Asignaciones funcionario-sectorpartido ───────────────────────────────────
+
+export type Asignacion = {
+  id_asignacion: number;
+  fun_id_usuario: number;
+  funcionario_mail: string;
+  funcionario_legajo: number;
+  sectorpartido_nombre_sector: string;
+  sectorpartido_id_estadio: number;
+  sectorpartido_id_evento: number;
+};
+
+export type CrearAsignacionInput = {
+  fun_id_usuario: number;
+  sectorpartido_nombre_sector: string;
+  sectorpartido_id_estadio: number;
+  sectorpartido_id_evento: number;
+};
+
+export async function getAsignaciones(): Promise<Asignacion[]> {
+  const res = await fetch(`${API_URL}/asignaciones`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener las asignaciones.');
+  return res.json() as Promise<Asignacion[]>;
+}
+
+export async function crearAsignacion(input: CrearAsignacionInput): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/asignaciones`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+  const data = (await res.json().catch(() => null)) as ApiErrorResponse | { message: string } | null;
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear la asignación.'));
+  }
+  return data as { message: string };
+}
+
+export async function eliminarAsignacion(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/asignaciones/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, 'No se pudo eliminar la asignación.'));
+  }
+}
+
 // ── Estadísticas ─────────────────────────────────────────────────────────────
 
 export async function fetchPartidosMasVendidos(): Promise<MasVendidoRow[]> {

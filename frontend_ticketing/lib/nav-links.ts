@@ -14,5 +14,6 @@ export const ADMIN_NAV_LINKS: NavLink[] = [
   { label: 'Selecciones', href: '/dashboard_admin/selecciones' },
   { label: 'Operaciones', href: '/dashboard_admin/operaciones' },
   { label: 'Dispositivos', href: '/dashboard_admin/dispositivos' },
+  { label: 'Asignaciones', href: '/dashboard_admin/asignaciones' },
   { label: 'Estadisticas', href: '/dashboard_admin/estadisticas' },
 ];

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState, type FormEvent } from 'react';
-import RequireRole from '@/components/RequireRole';
-import NavbarGeneral from '@/components/navbars/NavbarGeneral';
+import { useEffect, useState, type FormEvent } from "react";
+import RequireRole from "@/components/RequireRole";
+import NavbarGeneral from "@/components/navbars/NavbarGeneral";
 import {
   crearEquipo,
   editarEquipo,
@@ -10,14 +10,14 @@ import {
   getEquipos,
   type Equipo,
   type CreateEquipoInput,
-} from '@/lib/api';
-
+} from "@/lib/api";
+import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 type FormEquipo = {
   pais: string;
 };
 
 const initialForm: FormEquipo = {
-  pais: '',
+  pais: "",
 };
 
 export default function SeleccionesPage() {
@@ -28,15 +28,6 @@ export default function SeleccionesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const links = [
-    { label: 'Partidos', href: '/dashboard_admin/partidos' },
-    { label: 'Estadios', href: '/dashboard_admin/estadios' },
-    { label: 'Selecciones', href: '/dashboard_admin/selecciones' },
-    { label: "Operaciones", href: "/dashboard_admin/operaciones"},
-    { label: "Dispositivos", href: "/dashboard_admin/dispositivos" },
-
-  ];
 
   async function cargarEquipos() {
     try {
@@ -49,7 +40,7 @@ export default function SeleccionesPage() {
       setError(
         err instanceof Error
           ? err.message
-          : 'No se pudieron cargar las selecciones.',
+          : "No se pudieron cargar las selecciones.",
       );
     } finally {
       setLoading(false);
@@ -93,9 +84,7 @@ export default function SeleccionesPage() {
       await cargarEquipos();
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'No se pudo guardar la selección.',
+        err instanceof Error ? err.message : "No se pudo guardar la selección.",
       );
     } finally {
       setSaving(false);
@@ -117,99 +106,93 @@ export default function SeleccionesPage() {
       setError(
         err instanceof Error
           ? err.message
-          : 'No se pudo eliminar la selección.',
+          : "No se pudo eliminar la selección.",
       );
     }
   }
   return (
-  <RequireRole role="ADMIN">
-    <div className="wc-hero flex min-h-full flex-1 flex-col">
-      <NavbarGeneral links={links} />
+    <RequireRole role="ADMIN">
+      <div className="wc-hero flex min-h-full flex-1 flex-col">
+        <NavbarGeneral links={ADMIN_NAV_LINKS} />
 
-      <main className="flex flex-1 flex-col gap-8 p-10">
-        <section>
-          <h1 className="text-3xl font-bold text-white">
-            Gestión de selecciones
-          </h1>
+        <main className="flex flex-1 flex-col gap-8 p-10">
+          <section>
+            <h1 className="text-3xl font-bold text-white">
+              Gestión de selecciones
+            </h1>
 
-          <p className="mt-2 text-white/70">
-            Administrá las selecciones del Mundial 2026.
-          </p>
-        </section>
+            <p className="mt-2 text-white/70">
+              Administrá las selecciones del Mundial 2026.
+            </p>
+          </section>
 
-        {error && (
-          <p className="text-red-400">{error}</p>
-        )}
+          {error && <p className="text-red-400">{error}</p>}
 
-        <section className="rounded-2xl border border-white/10 bg-white/10 p-6">
-          <form
-            onSubmit={(e) => void guardarEquipo(e)}
-            className="flex gap-4"
-          >
-            <input
-              type="text"
-              placeholder="País"
-              value={form.pais}
-              onChange={(e) =>
-                setForm({ pais: e.target.value })
-              }
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
-            />
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-full bg-gold px-5 py-2 font-semibold text-night"
+          <section className="rounded-2xl border border-white/10 bg-white/10 p-6">
+            <form
+              onSubmit={(e) => void guardarEquipo(e)}
+              className="flex gap-4"
             >
-              {editingPais === null
-                ? 'Crear'
-                : 'Guardar'}
-            </button>
-          </form>
-        </section>
+              <input
+                type="text"
+                placeholder="País"
+                value={form.pais}
+                onChange={(e) => setForm({ pais: e.target.value })}
+                className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white"
+              />
 
-        <section className="rounded-2xl border border-white/10 bg-white/10 p-6">
-          {loading ? (
-            <p className="text-white">Cargando...</p>
-          ) : (
-            <table className="w-full text-white">
-              <thead>
-                <tr>
-                  <th className="text-left">País</th>
-                  <th className="text-left">Activo</th>
-                  <th className="text-left">Acciones</th>
-                </tr>
-              </thead>
+              <button
+                type="submit"
+                disabled={saving}
+                className="rounded-full bg-gold px-5 py-2 font-semibold text-night"
+              >
+                {editingPais === null ? "Crear" : "Guardar"}
+              </button>
+            </form>
+          </section>
 
-              <tbody>
-                {equipos.map((equipo) => (
-                  <tr key={equipo.pais}>
-                    <td>{equipo.pais}</td>
-                    <td>{equipo.activo ? 'Sí' : 'No'}</td>
-
-                    <td className="flex gap-2 py-2">
-                      <button
-                        onClick={() => editarFila(equipo)}
-                        className="rounded border px-3 py-1"
-                      >
-                        Editar
-                      </button>
-
-                      <button
-                        onClick={() => void borrarEquipo(equipo.pais)}
-                        className="rounded border px-3 py-1"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
+          <section className="rounded-2xl border border-white/10 bg-white/10 p-6">
+            {loading ? (
+              <p className="text-white">Cargando...</p>
+            ) : (
+              <table className="w-full text-white">
+                <thead>
+                  <tr>
+                    <th className="text-left">País</th>
+                    <th className="text-left">Activo</th>
+                    <th className="text-left">Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-      </main>
-    </div>
-  </RequireRole>
-);
+                </thead>
+
+                <tbody>
+                  {equipos.map((equipo) => (
+                    <tr key={equipo.pais}>
+                      <td>{equipo.pais}</td>
+                      <td>{equipo.activo ? "Sí" : "No"}</td>
+
+                      <td className="flex gap-2 py-2">
+                        <button
+                          onClick={() => editarFila(equipo)}
+                          className="rounded border px-3 py-1"
+                        >
+                          Editar
+                        </button>
+
+                        <button
+                          onClick={() => void borrarEquipo(equipo.pais)}
+                          className="rounded border px-3 py-1"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </main>
+      </div>
+    </RequireRole>
+  );
 }
