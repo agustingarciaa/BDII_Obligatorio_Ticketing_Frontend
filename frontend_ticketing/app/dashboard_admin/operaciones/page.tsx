@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import RequireRole from '@/components/RequireRole';
-import NavbarGeneral from '@/components/navbars/NavbarGeneral';
+import { useEffect, useState } from "react";
+import RequireRole from "@/components/RequireRole";
+import NavbarGeneral from "@/components/navbars/NavbarGeneral";
 import {
   getAdminCompras,
   getAdminTransferencias,
   type CompraAdmin,
   type TransferenciaAdmin,
-} from '@/lib/api';
+} from "@/lib/api";
+import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 
 export default function OperacionesPage() {
   const [compras, setCompras] = useState<CompraAdmin[]>([]);
@@ -17,14 +18,6 @@ export default function OperacionesPage() {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const links = [
-    { label: 'Partidos', href: "/dashboard_admin/partidos" },
-    { label: 'Estadios', href: "/dashboard_admin/estadios" },
-    { label: 'Selecciones', href: "/dashboard_admin/selecciones" },
-    { label: 'Operaciones', href: "/dashboard_admin/operaciones" },
-    { label: 'Dispositivos', href: "/dashboard_admin/dispositivos" },
-  ];
 
   async function cargarOperaciones() {
     try {
@@ -42,7 +35,7 @@ export default function OperacionesPage() {
       setError(
         err instanceof Error
           ? err.message
-          : 'No se pudieron cargar las operaciones.',
+          : "No se pudieron cargar las operaciones.",
       );
     } finally {
       setLoading(false);
@@ -56,15 +49,14 @@ export default function OperacionesPage() {
   return (
     <RequireRole role="ADMIN">
       <div className="wc-hero flex min-h-full flex-1 flex-col">
-        <NavbarGeneral links={links} />
+        <NavbarGeneral links={ADMIN_NAV_LINKS} />
 
         <main className="flex flex-1 flex-col gap-8 p-10">
           <section>
-            <h1 className="text-3xl font-bold text-white">
-              Operaciones
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Operaciones</h1>
             <p className="mt-2 max-w-xl text-white/70">
-              Listado general de compras y transferencias realizadas por los usuarios.
+              Listado general de compras y transferencias realizadas por los
+              usuarios.
             </p>
           </section>
 
@@ -83,9 +75,7 @@ export default function OperacionesPage() {
           {!loading && !error && (
             <>
               <section className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                <h2 className="mb-4 text-xl font-bold text-white">
-                  Compras
-                </h2>
+                <h2 className="mb-4 text-xl font-bold text-white">Compras</h2>
 
                 {compras.length === 0 ? (
                   <p className="text-white/70">No hay compras registradas.</p>
@@ -117,9 +107,7 @@ export default function OperacionesPage() {
                             <td className="py-3 pr-4">
                               {compra.cantidad_entradas}
                             </td>
-                            <td className="py-3 pr-4">
-                              ${compra.monto_total}
-                            </td>
+                            <td className="py-3 pr-4">${compra.monto_total}</td>
                             <td className="py-3 pr-4">
                               {new Date(compra.fecha).toLocaleString()}
                             </td>
@@ -176,9 +164,7 @@ export default function OperacionesPage() {
                               {transferencia.estado}
                             </td>
                             <td className="py-3 pr-4">
-                              {new Date(
-                                transferencia.fecha,
-                              ).toLocaleString()}
+                              {new Date(transferencia.fecha).toLocaleString()}
                             </td>
                           </tr>
                         ))}

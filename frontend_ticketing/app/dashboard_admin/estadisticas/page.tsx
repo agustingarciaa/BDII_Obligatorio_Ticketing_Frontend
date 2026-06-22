@@ -13,6 +13,7 @@ import {
   type EquipoPopularRow,
 } from "@/lib/statsApi";
 import { fetchPartidosMasVendidos, type MasVendidoRow } from "@/lib/api";
+import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 
 export default function EstadisticasPage() {
   const [menosVendidos, setMenosVendidos] = useState<MasVendidoRow[]>([]);
@@ -54,17 +55,9 @@ export default function EstadisticasPage() {
     fetchOne("equipos", fetchEquiposPopulares, setEquipos);
   }, []);
 
-  const links = [
-    { label: "Partidos", href: "/dashboard_admin/partidos" },
-    { label: "Estadios", href: "/dashboard_admin/estadios" },
-    { label: "Selecciones", href: "/dashboard_admin/selecciones" },
-    { label: "Dispositivos", href: "/dashboard_admin/dispositivos" },
-    { label: "Estadisticas", href: "/dashboard_admin/estadisticas" },
-  ];
-
   return (
     <div className="wc-hero min-h-screen p-10">
-      <NavbarGeneral links={links} />
+      <NavbarGeneral links={ADMIN_NAV_LINKS} />
       <h1 className="mb-8 mt-6 text-2xl font-bold text-white">Estadísticas</h1>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

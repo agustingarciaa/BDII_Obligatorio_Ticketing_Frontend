@@ -16,7 +16,7 @@ import {
   type Sector,
   type SectorPartido,
 } from "@/lib/api";
-
+import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 type FormPartido = {
   id_estadio: string;
   equipo_pais_local: string;
@@ -56,15 +56,6 @@ export default function PartidosPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const links = [
-  { label: "Partidos", href: "/dashboard_admin/partidos" },
-  { label: "Estadios", href: "/dashboard_admin/estadios" },
-  { label: "Selecciones", href: "/dashboard_admin/selecciones" },
-  { label: "Operaciones", href: "/dashboard_admin/operaciones"},
-  { label: "Dispositivos", href: "/dashboard_admin/dispositivos" },
-
-  ];
 
   async function cargarPartidos() {
     try {
@@ -136,7 +127,7 @@ export default function PartidosPage() {
       id_estadio: Number(form.id_estadio),
       equipo_pais_local: form.equipo_pais_local.trim(),
       equipo_pais_visitante: form.equipo_pais_visitante.trim(),
-      fecha_hora: `${form.fecha_hora}:00`.replace('T', ' '),
+      fecha_hora: `${form.fecha_hora}:00`.replace("T", " "),
     };
 
     try {
@@ -225,7 +216,7 @@ export default function PartidosPage() {
   return (
     <RequireRole role="ADMIN">
       <div className="wc-hero flex min-h-full flex-1 flex-col">
-        <NavbarGeneral links={links} />
+        <NavbarGeneral links={ADMIN_NAV_LINKS} />
 
         <main className="flex flex-1 flex-col gap-8 p-10">
           <section>
@@ -398,13 +389,16 @@ export default function PartidosPage() {
                             {partido.equipo_pais_visitante}
                           </td>
                           <td className="py-3 pr-4">
-                            {new Date(partido.fecha_hora).toLocaleString('es-UY', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {new Date(partido.fecha_hora).toLocaleString(
+                              "es-UY",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </td>
                           <td className="flex gap-2 py-3 pr-4">
                             <button
