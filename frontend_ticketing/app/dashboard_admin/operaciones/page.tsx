@@ -23,6 +23,7 @@ export default function OperacionesPage() {
     { label: 'Estadios', href: "/dashboard_admin/estadios" },
     { label: 'Selecciones', href: "/dashboard_admin/selecciones" },
     { label: 'Operaciones', href: "/dashboard_admin/operaciones" },
+    { label: 'Dispositivos', href: "/dashboard_admin/dispositivos" },
   ];
 
   async function cargarOperaciones() {

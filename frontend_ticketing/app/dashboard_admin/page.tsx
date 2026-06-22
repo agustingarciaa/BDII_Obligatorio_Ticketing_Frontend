@@ -10,6 +10,7 @@ export default function DashboardAdmin() {
   { label: "Estadios", href: "/dashboard_admin/estadios" },
   { label: "Selecciones", href: "/dashboard_admin/selecciones" },
   { label: "Operaciones", href: "/dashboard_admin/operaciones"},
+    { label: "Dispositivos", href: "/dashboard_admin/dispositivos" },
     { label: "Estadisticas", href: "/dashboard_admin/estadisticas" },
 
   ];

@@ -342,6 +342,78 @@ export async function getSectores(): Promise<Sector[]> {
   return (await res.json()) as Sector[];
 }
 
+// ── Dispositivos (admin) ─────────────────────────────────────────────────────
+
+export type Dispositivo = {
+  id_dispositivo: number;
+  fun_id_usuario: number;
+  activo: boolean;
+  funcionario: {
+    numero_legajo: number;
+    mail: string;
+  };
+};
+
+export type FuncionarioDispositivo = {
+  id_usuario: number;
+  numero_legajo: number;
+  mail: string;
+  tiene_dispositivo: boolean;
+};
+
+export async function getDispositivos(): Promise<Dispositivo[]> {
+  const res = await fetch(`${API_URL}/dispositivos`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener los dispositivos.');
+  return (await res.json()) as Dispositivo[];
+}
+
+export async function getFuncionariosDispositivo(): Promise<FuncionarioDispositivo[]> {
+  const res = await fetch(`${API_URL}/dispositivos/funcionarios`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error('No se pudieron obtener los funcionarios.');
+  return (await res.json()) as FuncionarioDispositivo[];
+}
+
+export async function crearDispositivo(fun_id_usuario: number): Promise<Dispositivo> {
+  const res = await fetch(`${API_URL}/dispositivos`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ fun_id_usuario }),
+  });
+  const data = (await res.json().catch(() => null)) as ApiErrorResponse | Dispositivo | null;
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el dispositivo.'));
+  }
+  return data as Dispositivo;
+}
+
+export async function editarDispositivo(id: number, fun_id_usuario: number): Promise<Dispositivo> {
+  const res = await fetch(`${API_URL}/dispositivos/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify({ fun_id_usuario }),
+  });
+  const data = (await res.json().catch(() => null)) as ApiErrorResponse | Dispositivo | null;
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo modificar el dispositivo.'));
+  }
+  return data as Dispositivo;
+}
+
+export async function eliminarDispositivo(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/dispositivos/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, 'No se pudo eliminar el dispositivo.'));
+  }
+}
+
 // ── Estadísticas ─────────────────────────────────────────────────────────────
 
 export async function fetchPartidosMasVendidos(): Promise<MasVendidoRow[]> {
@@ -669,6 +741,38 @@ export async function eliminarEstadio(id: number): Promise<void> {
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
     throw new Error(getErrorMessage(data, 'No se pudo eliminar el estadio.'));
+  }
+}
+
+// ── Sectores físicos (admin) ─────────────────────────────────────────────────
+
+export type CreateSectorInput = {
+  nombre_sector: string;
+  id_estadio: number;
+  capacidad_max: number;
+};
+
+export async function crearSector(input: CreateSectorInput): Promise<Sector> {
+  const res = await fetch(`${API_URL}/sectores`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+  const data = (await res.json().catch(() => null)) as ApiErrorResponse | Sector | null;
+  if (!res.ok) {
+    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el sector.'));
+  }
+  return data as Sector;
+}
+
+export async function eliminarSector(id_estadio: number, nombre_sector: string): Promise<void> {
+  const res = await fetch(
+    `${API_URL}/sectores/${id_estadio}?nombre_sector=${encodeURIComponent(nombre_sector)}`,
+    { method: 'DELETE', headers: authHeaders() },
+  );
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, 'No se pudo eliminar el sector.'));
   }
 }
 

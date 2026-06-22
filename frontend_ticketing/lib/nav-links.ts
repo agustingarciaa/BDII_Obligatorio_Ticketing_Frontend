@@ -9,5 +9,10 @@ export const USUARIO_NAV_LINKS: NavLink[] = [
 ];
 
 export const ADMIN_NAV_LINKS: NavLink[] = [
-  { label: 'Inicio', href: '/dashboard_admin' },
+  { label: 'Partidos', href: '/dashboard_admin/partidos' },
+  { label: 'Estadios', href: '/dashboard_admin/estadios' },
+  { label: 'Selecciones', href: '/dashboard_admin/selecciones' },
+  { label: 'Operaciones', href: '/dashboard_admin/operaciones' },
+  { label: 'Dispositivos', href: '/dashboard_admin/dispositivos' },
+  { label: 'Estadisticas', href: '/dashboard_admin/estadisticas' },
 ];
