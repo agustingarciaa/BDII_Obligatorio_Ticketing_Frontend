@@ -124,7 +124,7 @@ export async function getAdminCompras(): Promise<CompraAdmin[]> {
   });
 
   if (!res.ok) {
-    throw new Error('No se pudieron obtener las compras.');
+    throw new Error("No se pudieron obtener las compras.");
   }
 
   return (await res.json()) as CompraAdmin[];
@@ -136,7 +136,7 @@ export async function getAdminTransferencias(): Promise<TransferenciaAdmin[]> {
   });
 
   if (!res.ok) {
-    throw new Error('No se pudieron obtener las transferencias.');
+    throw new Error("No se pudieron obtener las transferencias.");
   }
 
   return (await res.json()) as TransferenciaAdmin[];
@@ -365,52 +365,79 @@ export async function getDispositivos(): Promise<Dispositivo[]> {
   const res = await fetch(`${API_URL}/dispositivos`, {
     headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('No se pudieron obtener los dispositivos.');
+  if (!res.ok) throw new Error("No se pudieron obtener los dispositivos.");
   return (await res.json()) as Dispositivo[];
 }
 
-export async function getFuncionariosDispositivo(): Promise<FuncionarioDispositivo[]> {
+export async function getFuncionariosDispositivo(): Promise<
+  FuncionarioDispositivo[]
+> {
   const res = await fetch(`${API_URL}/dispositivos/funcionarios`, {
     headers: authHeaders(),
   });
-  if (!res.ok) throw new Error('No se pudieron obtener los funcionarios.');
+  if (!res.ok) throw new Error("No se pudieron obtener los funcionarios.");
   return (await res.json()) as FuncionarioDispositivo[];
 }
 
-export async function crearDispositivo(fun_id_usuario: number): Promise<Dispositivo> {
+export async function crearDispositivo(
+  fun_id_usuario: number,
+): Promise<Dispositivo> {
   const res = await fetch(`${API_URL}/dispositivos`, {
-    method: 'POST',
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({ fun_id_usuario }),
   });
-  const data = (await res.json().catch(() => null)) as ApiErrorResponse | Dispositivo | null;
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | Dispositivo
+    | null;
   if (!res.ok) {
-    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el dispositivo.'));
+    throw new Error(
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo crear el dispositivo.",
+      ),
+    );
   }
   return data as Dispositivo;
 }
 
-export async function editarDispositivo(id: number, fun_id_usuario: number): Promise<Dispositivo> {
+export async function editarDispositivo(
+  id: number,
+  fun_id_usuario: number,
+): Promise<Dispositivo> {
   const res = await fetch(`${API_URL}/dispositivos/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify({ fun_id_usuario }),
   });
-  const data = (await res.json().catch(() => null)) as ApiErrorResponse | Dispositivo | null;
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | Dispositivo
+    | null;
   if (!res.ok) {
-    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo modificar el dispositivo.'));
+    throw new Error(
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo modificar el dispositivo.",
+      ),
+    );
   }
   return data as Dispositivo;
 }
 
 export async function eliminarDispositivo(id: number): Promise<void> {
   const res = await fetch(`${API_URL}/dispositivos/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: authHeaders(),
   });
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new Error(getErrorMessage(data, 'No se pudo eliminar el dispositivo.'));
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(
+      getErrorMessage(data, "No se pudo eliminar el dispositivo."),
+    );
   }
 }
 
@@ -434,34 +461,49 @@ export type CrearAsignacionInput = {
 };
 
 export async function getAsignaciones(): Promise<Asignacion[]> {
-  const res = await fetch(`${API_URL}/asignaciones`, {
-    headers: authHeaders(),
+  const token = getToken();
+  const res = await fetch(`${API_URL}/sectores/asignaciones`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
-  if (!res.ok) throw new Error('No se pudieron obtener las asignaciones.');
+  if (!res.ok) throw new Error("No se pudieron obtener las asignaciones.");
   return res.json() as Promise<Asignacion[]>;
 }
 
-export async function crearAsignacion(input: CrearAsignacionInput): Promise<{ message: string }> {
-  const res = await fetch(`${API_URL}/asignaciones`, {
-    method: 'POST',
+export async function crearAsignacion(
+  input: CrearAsignacionInput,
+): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/sectores/asignar-funcionario`, {
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
-  const data = (await res.json().catch(() => null)) as ApiErrorResponse | { message: string } | null;
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | { message: string }
+    | null;
   if (!res.ok) {
-    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear la asignación.'));
+    throw new Error(
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo crear la asignación.",
+      ),
+    );
   }
   return data as { message: string };
 }
 
 export async function eliminarAsignacion(id: number): Promise<void> {
-  const res = await fetch(`${API_URL}/asignaciones/${id}`, {
-    method: 'DELETE',
+  const res = await fetch(`${API_URL}/sectores/desasignar-funcionario`, {
+    method: "DELETE",
     headers: authHeaders(),
   });
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new Error(getErrorMessage(data, 'No se pudo eliminar la asignación.'));
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(
+      getErrorMessage(data, "No se pudo eliminar la asignación."),
+    );
   }
 }
 
@@ -730,7 +772,7 @@ export async function getEstadios(): Promise<Estadio[]> {
   });
 
   if (!res.ok) {
-    throw new Error('No se pudieron obtener los estadios.');
+    throw new Error("No se pudieron obtener los estadios.");
   }
 
   return (await res.json()) as Estadio[];
@@ -740,7 +782,7 @@ export async function crearEstadio(
   input: CreateEstadioInput,
 ): Promise<{ message: string }> {
   const res = await fetch(`${API_URL}/estadios`, {
-    method: 'POST',
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -752,7 +794,10 @@ export async function crearEstadio(
 
   if (!res.ok) {
     throw new Error(
-      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el estadio.'),
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo crear el estadio.",
+      ),
     );
   }
 
@@ -764,7 +809,7 @@ export async function editarEstadio(
   input: UpdateEstadioInput,
 ): Promise<{ message: string }> {
   const res = await fetch(`${API_URL}/estadios/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -776,7 +821,10 @@ export async function editarEstadio(
 
   if (!res.ok) {
     throw new Error(
-      getErrorMessage(data as ApiErrorResponse | null, 'No se pudo editar el estadio.'),
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo editar el estadio.",
+      ),
     );
   }
 
@@ -785,13 +833,15 @@ export async function editarEstadio(
 
 export async function eliminarEstadio(id: number): Promise<void> {
   const res = await fetch(`${API_URL}/estadios/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: authHeaders(),
   });
 
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new Error(getErrorMessage(data, 'No se pudo eliminar el estadio.'));
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, "No se pudo eliminar el estadio."));
   }
 }
 
@@ -805,25 +855,38 @@ export type CreateSectorInput = {
 
 export async function crearSector(input: CreateSectorInput): Promise<Sector> {
   const res = await fetch(`${API_URL}/sectores`, {
-    method: 'POST',
+    method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
-  const data = (await res.json().catch(() => null)) as ApiErrorResponse | Sector | null;
+  const data = (await res.json().catch(() => null)) as
+    | ApiErrorResponse
+    | Sector
+    | null;
   if (!res.ok) {
-    throw new Error(getErrorMessage(data as ApiErrorResponse | null, 'No se pudo crear el sector.'));
+    throw new Error(
+      getErrorMessage(
+        data as ApiErrorResponse | null,
+        "No se pudo crear el sector.",
+      ),
+    );
   }
   return data as Sector;
 }
 
-export async function eliminarSector(id_estadio: number, nombre_sector: string): Promise<void> {
+export async function eliminarSector(
+  id_estadio: number,
+  nombre_sector: string,
+): Promise<void> {
   const res = await fetch(
     `${API_URL}/sectores/${id_estadio}?nombre_sector=${encodeURIComponent(nombre_sector)}`,
-    { method: 'DELETE', headers: authHeaders() },
+    { method: "DELETE", headers: authHeaders() },
   );
   if (!res.ok) {
-    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
-    throw new Error(getErrorMessage(data, 'No se pudo eliminar el sector.'));
+    const data = (await res
+      .json()
+      .catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, "No se pudo eliminar el sector."));
   }
 }
 
