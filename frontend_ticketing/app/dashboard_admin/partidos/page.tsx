@@ -10,11 +10,15 @@ import {
   getPartidos,
   getSectores,
   getSectoresPartido,
+  getEstadios,
+  getEquipos,
   habilitarSectorPartido,
   type CreatePartidoInput,
   type Partido,
   type Sector,
   type SectorPartido,
+  type Estadio,
+  type Equipo,
 } from "@/lib/api";
 import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 type FormPartido = {
@@ -43,6 +47,8 @@ export default function PartidosPage() {
   const [partidos, setPartidos] = useState<Partido[]>([]);
   const [sectores, setSectores] = useState<Sector[]>([]);
   const [sectoresPartido, setSectoresPartido] = useState<SectorPartido[]>([]);
+  const [estadios, setEstadios] = useState<Estadio[]>([]);
+  const [equipos, setEquipos] = useState<Equipo[]>([]);
 
   const [form, setForm] = useState<FormPartido>(initialForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -62,13 +68,18 @@ export default function PartidosPage() {
       setError(null);
       setLoading(true);
 
-      const [partidosData, sectoresData] = await Promise.all([
-        getPartidos(),
-        getSectores(),
-      ]);
+      const [partidosData, sectoresData, estadiosData, equiposData] =
+        await Promise.all([
+          getPartidos(),
+          getSectores(),
+          getEstadios(),
+          getEquipos(),
+        ]);
 
       setPartidos(partidosData);
       setSectores(sectoresData);
+      setEstadios(estadiosData);
+      setEquipos(equiposData.filter((e) => e.activo));
     } catch (err) {
       setError(
         err instanceof Error
@@ -264,38 +275,69 @@ export default function PartidosPage() {
               onSubmit={(e) => void guardarPartido(e)}
               className="mt-4 grid gap-4 md:grid-cols-2"
             >
-              <input
-                type="number"
+              <select
                 required
-                placeholder="ID estadio"
                 value={form.id_estadio}
                 onChange={(e) =>
                   setForm({ ...form, id_estadio: e.target.value })
                 }
-                className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white placeholder:text-white/50"
-              />
+                className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white"
+              >
+                <option value="" className="text-black">
+                  Elegir estadio…
+                </option>
+                {estadios.map((es) => (
+                  <option key={es.id_estadio} value={es.id_estadio} className="text-black">
+                    {es.nombre} — {es.ciudad} ({es.pais})
+                  </option>
+                ))}
+              </select>
 
-              <input
-                type="text"
+              <select
                 required
-                placeholder="Equipo local"
                 value={form.equipo_pais_local}
                 onChange={(e) =>
                   setForm({ ...form, equipo_pais_local: e.target.value })
                 }
-                className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white placeholder:text-white/50"
-              />
+                className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white"
+              >
+                <option value="" className="text-black">
+                  Equipo local…
+                </option>
+                {equipos.map((eq) => (
+                  <option
+                    key={eq.pais}
+                    value={eq.pais}
+                    disabled={eq.pais === form.equipo_pais_visitante}
+                    className="text-black"
+                  >
+                    {eq.pais}
+                  </option>
+                ))}
+              </select>
 
-              <input
-                type="text"
+              <select
                 required
-                placeholder="Equipo visitante"
                 value={form.equipo_pais_visitante}
                 onChange={(e) =>
                   setForm({ ...form, equipo_pais_visitante: e.target.value })
                 }
-                className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white placeholder:text-white/50"
-              />
+                className="rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white"
+              >
+                <option value="" className="text-black">
+                  Equipo visitante…
+                </option>
+                {equipos.map((eq) => (
+                  <option
+                    key={eq.pais}
+                    value={eq.pais}
+                    disabled={eq.pais === form.equipo_pais_local}
+                    className="text-black"
+                  >
+                    {eq.pais}
+                  </option>
+                ))}
+              </select>
 
               <input
                 type="datetime-local"
