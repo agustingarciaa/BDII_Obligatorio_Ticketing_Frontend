@@ -9,6 +9,7 @@ import {
   getEstadios,
   getSectores,
   crearSector,
+  editarSector,
   eliminarSector,
   type Estadio,
   type Sector,
@@ -30,6 +31,11 @@ export default function EstadiosPage() {
   const [nuevoSectorNombre, setNuevoSectorNombre] = useState('');
   const [nuevoSectorCap, setNuevoSectorCap] = useState('');
   const [sectorError, setSectorError] = useState('');
+
+  // Edición inline de un sector existente
+  const [editSectorKey, setEditSectorKey] = useState<string | null>(null); // `${id_estadio}-${nombre_actual}`
+  const [editSectorNombre, setEditSectorNombre] = useState('');
+  const [editSectorCap, setEditSectorCap] = useState('');
 
   async function cargarDatos() {
     try {
@@ -141,6 +147,45 @@ export default function EstadiosPage() {
     } catch (err) {
       setSectorError(
         err instanceof Error ? err.message : 'No se pudo eliminar el sector.',
+      );
+    }
+  }
+
+  function iniciarEditarSector(s: Sector) {
+    setEditSectorKey(`${s.id_estadio}-${s.nombre_sector}`);
+    setEditSectorNombre(s.nombre_sector);
+    setEditSectorCap(String(s.capacidad_max));
+    setSectorError('');
+  }
+
+  function cancelarEditarSector() {
+    setEditSectorKey(null);
+    setEditSectorNombre('');
+    setEditSectorCap('');
+  }
+
+  async function guardarEditarSector(idEstadio: number, nombreActual: string) {
+    setSectorError('');
+    if (!editSectorNombre.trim()) {
+      setSectorError('El nombre del sector no puede quedar vacío.');
+      return;
+    }
+    const cap = Number(editSectorCap);
+    if (!cap || cap < 1) {
+      setSectorError('La capacidad debe ser un número mayor a 0.');
+      return;
+    }
+    try {
+      await editarSector(idEstadio, {
+        nombre_sector_actual: nombreActual,
+        nombre_sector: editSectorNombre.trim(),
+        capacidad_max: cap,
+      });
+      cancelarEditarSector();
+      await cargarDatos();
+    } catch (err) {
+      setSectorError(
+        err instanceof Error ? err.message : 'No se pudo modificar el sector.',
       );
     }
   }
@@ -322,32 +367,92 @@ export default function EstadiosPage() {
                               </p>
                             ) : (
                               <ul className="flex flex-wrap gap-2">
-                                {sectoresEstadio.map((s) => (
-                                  <li
-                                    key={s.nombre_sector}
-                                    className="flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 px-4 py-2"
-                                  >
-                                    <span className="font-semibold">
-                                      {s.nombre_sector}
-                                    </span>
-                                    <span className="text-sm text-gray-300">
-                                      cap. {s.capacidad_max.toLocaleString('es-UY')}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        quitarSector(
-                                          estadio.id_estadio,
-                                          s.nombre_sector,
-                                        )
-                                      }
-                                      className="rounded-lg bg-red-500/80 px-2 py-1 text-xs font-bold text-white transition hover:bg-red-400"
-                                      title="Eliminar sector"
+                                {sectoresEstadio.map((s) => {
+                                  const enEdicion =
+                                    editSectorKey ===
+                                    `${s.id_estadio}-${s.nombre_sector}`;
+                                  return (
+                                    <li
+                                      key={s.nombre_sector}
+                                      className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2"
                                     >
-                                      ✕
-                                    </button>
-                                  </li>
-                                ))}
+                                      {enEdicion ? (
+                                        <>
+                                          <input
+                                            className="w-28 rounded-lg border border-white/30 bg-white/80 px-2 py-1 text-sm text-black outline-none"
+                                            value={editSectorNombre}
+                                            placeholder="Nombre"
+                                            onChange={(e) =>
+                                              setEditSectorNombre(e.target.value)
+                                            }
+                                          />
+                                          <input
+                                            type="number"
+                                            min="1"
+                                            className="w-24 rounded-lg border border-white/30 bg-white/80 px-2 py-1 text-sm text-black outline-none"
+                                            value={editSectorCap}
+                                            placeholder="Cap."
+                                            onChange={(e) =>
+                                              setEditSectorCap(e.target.value)
+                                            }
+                                          />
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              guardarEditarSector(
+                                                estadio.id_estadio,
+                                                s.nombre_sector,
+                                              )
+                                            }
+                                            className="rounded-lg bg-yellow-400 px-2 py-1 text-xs font-bold text-black transition hover:bg-yellow-300"
+                                            title="Guardar"
+                                          >
+                                            ✓
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={cancelarEditarSector}
+                                            className="rounded-lg bg-white/20 px-2 py-1 text-xs font-bold text-white transition hover:bg-white/30"
+                                            title="Cancelar"
+                                          >
+                                            ✕
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <span className="font-semibold">
+                                            {s.nombre_sector}
+                                          </span>
+                                          <span className="text-sm text-gray-300">
+                                            cap.{' '}
+                                            {s.capacidad_max.toLocaleString('es-UY')}
+                                          </span>
+                                          <button
+                                            type="button"
+                                            onClick={() => iniciarEditarSector(s)}
+                                            className="rounded-lg bg-blue-500 px-2 py-1 text-xs font-bold text-white transition hover:bg-blue-400"
+                                            title="Editar sector"
+                                          >
+                                            ✎
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              quitarSector(
+                                                estadio.id_estadio,
+                                                s.nombre_sector,
+                                              )
+                                            }
+                                            className="rounded-lg bg-red-500/80 px-2 py-1 text-xs font-bold text-white transition hover:bg-red-400"
+                                            title="Eliminar sector"
+                                          >
+                                            ✕
+                                          </button>
+                                        </>
+                                      )}
+                                    </li>
+                                  );
+                                })}
                               </ul>
                             )}
                           </td>
