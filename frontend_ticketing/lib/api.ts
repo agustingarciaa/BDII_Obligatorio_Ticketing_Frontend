@@ -892,6 +892,27 @@ export async function eliminarSector(
   }
 }
 
+export type UpdateSectorInput = {
+  nombre_sector_actual: string;
+  nombre_sector?: string;
+  capacidad_max?: number;
+};
+
+export async function editarSector(
+  id_estadio: number,
+  input: UpdateSectorInput,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/sectores/${id_estadio}`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(getErrorMessage(data, "No se pudo modificar el sector."));
+  }
+}
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 export type RegisterInput = {
