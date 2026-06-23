@@ -950,3 +950,25 @@ export async function register(input: RegisterInput): Promise<string> {
   const data = (await res.json()) as { access_token: string };
   return data.access_token;
 }
+
+// Registro de funcionario de validación por parte de un admin (POST /auth/register/funcionario).
+export type RegisterFuncionarioInput = RegisterInput & {
+  numero_legajo: number;
+};
+
+export async function registrarFuncionario(
+  input: RegisterFuncionarioInput,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/auth/register/funcionario`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiErrorResponse | null;
+    throw new Error(
+      getErrorMessage(data, "No se pudo registrar el funcionario."),
+    );
+  }
+}
