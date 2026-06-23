@@ -87,6 +87,11 @@ export default function AsignacionesPage() {
     [partidos],
   );
 
+  const asignacionesActivas = useMemo(
+    () => asignaciones.filter((a) => a.sectorpartido_nombre_sector !== null),
+    [asignaciones],
+  );
+
   const sectoresDisponibles = useMemo(() => {
     const alreadyAssigned = asignaciones
       .filter((a) => a.sectorpartido_id_evento === Number(partidoId))
@@ -119,7 +124,7 @@ export default function AsignacionesPage() {
     }
 
     const input: CrearAsignacionInput = {
-      fun_id_usuario: Number(funId),
+      funcionario_id_usuario: Number(funId),
       sectorpartido_nombre_sector: sectorNombre,
       sectorpartido_id_estadio: sector.sector_id_estadio,
       sectorpartido_id_evento: Number(partidoId),
@@ -142,13 +147,25 @@ export default function AsignacionesPage() {
   }
 
   async function borrar(a: Asignacion) {
+    if (
+      a.sectorpartido_nombre_sector === null ||
+      a.sectorpartido_id_estadio === null ||
+      a.sectorpartido_id_evento === null
+    ) {
+      return;
+    }
     const ok = window.confirm(
-      `¿Eliminar la asignación del funcionario ${a.funcionario_mail} al sector ${a.sectorpartido_nombre_sector}?`,
+      `¿Eliminar la asignación del funcionario ${a.mail} al sector ${a.sectorpartido_nombre_sector}?`,
     );
     if (!ok) return;
     try {
       setError(null);
-      await eliminarAsignacion(a.id_asignacion);
+      await eliminarAsignacion({
+        funcionario_id_usuario: a.funcionario_id_usuario,
+        sectorpartido_nombre_sector: a.sectorpartido_nombre_sector,
+        sectorpartido_id_estadio: a.sectorpartido_id_estadio,
+        sectorpartido_id_evento: a.sectorpartido_id_evento,
+      });
       flashSuccess("Asignación eliminada.");
       await cargar();
     } catch (err) {
@@ -191,7 +208,7 @@ export default function AsignacionesPage() {
             <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
               <p className="text-sm text-white/60">Asignaciones activas</p>
               <p className="mt-2 text-3xl font-bold text-white">
-                {asignaciones.length}
+                {asignacionesActivas.length}
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
@@ -312,8 +329,8 @@ export default function AsignacionesPage() {
                   Asignaciones registradas
                 </h2>
                 <p className="text-sm text-white/60">
-                  {asignaciones.length} asignación
-                  {asignaciones.length === 1 ? "" : "es"}.
+                  {asignacionesActivas.length} asignación
+                  {asignacionesActivas.length === 1 ? "" : "es"}.
                 </p>
               </div>
               <button
@@ -327,7 +344,7 @@ export default function AsignacionesPage() {
 
             {loading && <p className="text-white/70">Cargando asignaciones…</p>}
 
-            {!loading && asignaciones.length === 0 && !error && (
+            {!loading && asignacionesActivas.length === 0 && !error && (
               <div className="flex flex-col items-center gap-2 py-12 text-center">
                 <span className="text-4xl">📋</span>
                 <p className="text-white/60">
@@ -336,12 +353,11 @@ export default function AsignacionesPage() {
               </div>
             )}
 
-            {!loading && asignaciones.length > 0 && (
+            {!loading && asignacionesActivas.length > 0 && (
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left text-sm">
                   <thead>
                     <tr className="border-b border-white/10 text-white/60">
-                      <th className="py-3 pr-4">ID</th>
                       <th className="py-3 pr-4">Funcionario</th>
                       <th className="py-3 pr-4">Partido</th>
                       <th className="py-3 pr-4">Sector</th>
@@ -349,22 +365,19 @@ export default function AsignacionesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {asignaciones.map((a) => (
+                    {asignacionesActivas.map((a) => (
                       <tr
-                        key={a.id_asignacion}
+                        key={`${a.funcionario_id_usuario}-${a.sectorpartido_id_estadio}-${a.sectorpartido_nombre_sector}-${a.sectorpartido_id_evento}`}
                         className="border-b border-white/5 text-white transition-colors hover:bg-white/5"
                       >
-                        <td className="py-3 pr-4 font-mono text-white/80">
-                          #{a.id_asignacion}
-                        </td>
                         <td className="py-3 pr-4">
                           <div>
                             <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold">
-                              Legajo {a.funcionario_legajo}
+                              Legajo {a.numero_legajo}
                             </span>
                           </div>
                           <p className="mt-0.5 text-xs text-white/50">
-                            {a.funcionario_mail}
+                            {a.mail}
                           </p>
                         </td>
                         <td className="py-3 pr-4">

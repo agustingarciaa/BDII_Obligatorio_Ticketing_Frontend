@@ -444,21 +444,23 @@ export async function eliminarDispositivo(id: number): Promise<void> {
 // ── Asignaciones funcionario-sectorpartido ───────────────────────────────────
 
 export type Asignacion = {
-  id_asignacion: number;
-  fun_id_usuario: number;
-  funcionario_mail: string;
-  funcionario_legajo: number;
+  funcionario_id_usuario: number;
+  numero_legajo: number;
+  mail: string;
+  sectorpartido_nombre_sector: string | null;
+  sectorpartido_id_estadio: number | null;
+  sectorpartido_id_evento: number | null;
+  activo: boolean | null;
+};
+
+export type CrearAsignacionInput = {
+  funcionario_id_usuario: number;
   sectorpartido_nombre_sector: string;
   sectorpartido_id_estadio: number;
   sectorpartido_id_evento: number;
 };
 
-export type CrearAsignacionInput = {
-  fun_id_usuario: number;
-  sectorpartido_nombre_sector: string;
-  sectorpartido_id_estadio: number;
-  sectorpartido_id_evento: number;
-};
+export type EliminarAsignacionInput = CrearAsignacionInput;
 
 export async function getAsignaciones(): Promise<Asignacion[]> {
   const res = await fetch(`${API_URL}/sectores/asignaciones`, {
@@ -469,7 +471,7 @@ export async function getAsignaciones(): Promise<Asignacion[]> {
 }
 
 export async function crearAsignacion(input: CrearAsignacionInput): Promise<{ message: string }> {
-  const res = await fetch(`${API_URL}/sectores/asignaciones`, {
+  const res = await fetch(`${API_URL}/sectores/asignar-funcionario`, {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(input),
@@ -489,10 +491,13 @@ export async function crearAsignacion(input: CrearAsignacionInput): Promise<{ me
   return data as { message: string };
 }
 
-export async function eliminarAsignacion(id: number): Promise<void> {
-  const res = await fetch(`${API_URL}/sectores/asignaciones/${id}`, {
+export async function eliminarAsignacion(
+  input: EliminarAsignacionInput,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/sectores/desasignar-funcionario`, {
     method: 'DELETE',
     headers: authHeaders(),
+    body: JSON.stringify(input),
   });
   if (!res.ok) {
     const data = (await res

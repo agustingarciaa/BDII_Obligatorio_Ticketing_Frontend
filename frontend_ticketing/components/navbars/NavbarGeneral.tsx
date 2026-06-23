@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect, CSSProperties } from "react";
+import { getRole } from "@/lib/auth";
 
 export interface NavLink {
   label: string;
@@ -198,7 +199,11 @@ export default function NavbarGeneral({ links = DEFAULT_LINKS }: NavbarGeneralPr
               handleEnter("user", buttonRefs.current["user"] as HTMLElement)
             }
             onClick={() => {
-              router.push("/dashboard_usuario/perfil");
+              router.push(
+                getRole() === "ADMIN"
+                  ? "/dashboard_admin/perfil"
+                  : "/dashboard_usuario/perfil",
+              );
             }}
             aria-label="Perfil de usuario"
             className={`relative z-10 shrink-0 w-[46px] h-[46px] rounded-full flex items-center justify-center cursor-pointer transition-transform duration-150 ${
