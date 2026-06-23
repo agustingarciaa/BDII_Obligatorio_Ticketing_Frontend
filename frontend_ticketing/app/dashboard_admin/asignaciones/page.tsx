@@ -11,6 +11,7 @@ import {
   getPartidos,
   getPartido,
   getSectoresPartido,
+  registrarFuncionario,
   type Asignacion,
   type CrearAsignacionInput,
   type FuncionarioDispositivo,
@@ -18,6 +19,59 @@ import {
   type SectorPartido,
 } from "@/lib/api";
 import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
+
+const inputFunClass =
+  "rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-white placeholder:text-white/40 outline-none focus:border-gold/60";
+
+type FormFuncionario = {
+  doc_pais: string;
+  doc_tipo: string;
+  doc_numero: string;
+  numero_legajo: string;
+  mail: string;
+  contrasena: string;
+  dir_pais: string;
+  dir_localidad: string;
+  dir_calle: string;
+  dir_numero: string;
+  dir_codigo_postal: string;
+  telefonos: string;
+};
+
+const initialFuncForm: FormFuncionario = {
+  doc_pais: "",
+  doc_tipo: "CI",
+  doc_numero: "",
+  numero_legajo: "",
+  mail: "",
+  contrasena: "",
+  dir_pais: "",
+  dir_localidad: "",
+  dir_calle: "",
+  dir_numero: "",
+  dir_codigo_postal: "",
+  telefonos: "",
+};
+
+function CampoFun({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-xs font-semibold uppercase tracking-wide text-white/55">
+        {label}
+      </span>
+      {children}
+      {hint && <span className="text-[0.7rem] text-white/40">{hint}</span>}
+    </label>
+  );
+}
 
 export default function AsignacionesPage() {
   const [asignaciones, setAsignaciones] = useState<Asignacion[]>([]);
@@ -35,9 +89,61 @@ export default function AsignacionesPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [sectoresLoading, setSectoresLoading] = useState(false);
 
+  // Registro de funcionario
+  const [mostrarRegistro, setMostrarRegistro] = useState(false);
+  const [funForm, setFunForm] = useState<FormFuncionario>(initialFuncForm);
+  const [registrando, setRegistrando] = useState(false);
+  const [regError, setRegError] = useState<string | null>(null);
+
   function flashSuccess(msg: string) {
     setSuccess(msg);
     setTimeout(() => setSuccess(null), 3500);
+  }
+
+  function setFun(field: keyof FormFuncionario, value: string) {
+    setFunForm((f) => ({ ...f, [field]: value }));
+  }
+
+  async function registrarFun(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setRegError(null);
+    if (!funForm.numero_legajo || Number(funForm.numero_legajo) < 1) {
+      setRegError("Ingresá un número de legajo válido.");
+      return;
+    }
+    try {
+      setRegistrando(true);
+      await registrarFuncionario({
+        doc_pais: funForm.doc_pais.trim(),
+        doc_tipo: funForm.doc_tipo.trim(),
+        doc_numero: funForm.doc_numero.trim(),
+        numero_legajo: Number(funForm.numero_legajo),
+        mail: funForm.mail.trim(),
+        contrasena: funForm.contrasena,
+        dir_pais: funForm.dir_pais.trim(),
+        dir_localidad: funForm.dir_localidad.trim(),
+        dir_calle: funForm.dir_calle.trim(),
+        dir_numero: Number(funForm.dir_numero),
+        dir_codigo_postal: funForm.dir_codigo_postal.trim(),
+        telefonos: funForm.telefonos.trim()
+          ? funForm.telefonos.split(",").map((t) => t.trim()).filter(Boolean)
+          : undefined,
+      });
+      flashSuccess(
+        `Funcionario registrado (legajo ${funForm.numero_legajo}). Ya podés asignarlo a un sector.`,
+      );
+      setFunForm(initialFuncForm);
+      setMostrarRegistro(false);
+      await cargar();
+    } catch (err) {
+      setRegError(
+        err instanceof Error
+          ? err.message
+          : "No se pudo registrar el funcionario.",
+      );
+    } finally {
+      setRegistrando(false);
+    }
   }
 
   async function cargar() {
@@ -223,6 +329,101 @@ export default function AsignacionesPage() {
                 {partidosConSectores.length}
               </p>
             </div>
+          </section>
+
+          {/* Registro de funcionario */}
+          <section className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-white">
+                  Funcionarios de validación
+                </h2>
+                <p className="text-sm text-white/60">
+                  Registrá un nuevo funcionario para poder asignarlo a sectores.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMostrarRegistro((v) => !v);
+                  setRegError(null);
+                }}
+                className="rounded-full border border-gold/60 px-4 py-2 text-sm font-semibold text-gold transition-colors hover:bg-gold/10"
+              >
+                {mostrarRegistro ? "Cerrar" : "+ Registrar funcionario"}
+              </button>
+            </div>
+
+            {mostrarRegistro && (
+              <form onSubmit={registrarFun} className="mt-5 flex flex-col gap-5">
+                {regError && (
+                  <div className="rounded-xl border border-red-400/40 bg-red-500/15 px-4 py-3 text-sm font-semibold text-red-200">
+                    {regError}
+                  </div>
+                )}
+
+                {/* Documento + legajo */}
+                <fieldset className="grid gap-3 md:grid-cols-4">
+                  <CampoFun label="País del documento">
+                    <input className={inputFunClass} required value={funForm.doc_pais} onChange={(e) => setFun("doc_pais", e.target.value)} />
+                  </CampoFun>
+                  <CampoFun label="Tipo">
+                    <input className={inputFunClass} required value={funForm.doc_tipo} onChange={(e) => setFun("doc_tipo", e.target.value)} />
+                  </CampoFun>
+                  <CampoFun label="Número de documento">
+                    <input className={inputFunClass} required value={funForm.doc_numero} onChange={(e) => setFun("doc_numero", e.target.value)} />
+                  </CampoFun>
+                  <CampoFun label="N.º de legajo">
+                    <input className={inputFunClass} type="number" min="1" required value={funForm.numero_legajo} onChange={(e) => setFun("numero_legajo", e.target.value)} />
+                  </CampoFun>
+                </fieldset>
+
+                {/* Credenciales */}
+                <fieldset className="grid gap-3 md:grid-cols-2">
+                  <CampoFun label="Mail">
+                    <input className={inputFunClass} type="email" required value={funForm.mail} onChange={(e) => setFun("mail", e.target.value)} />
+                  </CampoFun>
+                  <CampoFun label="Contraseña" hint="Mín. 8, con mayúscula, minúscula y número.">
+                    <input className={inputFunClass} type="password" required value={funForm.contrasena} onChange={(e) => setFun("contrasena", e.target.value)} />
+                  </CampoFun>
+                </fieldset>
+
+                {/* Dirección */}
+                <fieldset className="grid gap-3 md:grid-cols-2">
+                  <CampoFun label="País">
+                    <input className={inputFunClass} required value={funForm.dir_pais} onChange={(e) => setFun("dir_pais", e.target.value)} />
+                  </CampoFun>
+                  <CampoFun label="Localidad">
+                    <input className={inputFunClass} required value={funForm.dir_localidad} onChange={(e) => setFun("dir_localidad", e.target.value)} />
+                  </CampoFun>
+                  <CampoFun label="Calle">
+                    <input className={inputFunClass} required value={funForm.dir_calle} onChange={(e) => setFun("dir_calle", e.target.value)} />
+                  </CampoFun>
+                  <div className="grid grid-cols-2 gap-3">
+                    <CampoFun label="Número">
+                      <input className={inputFunClass} type="number" required value={funForm.dir_numero} onChange={(e) => setFun("dir_numero", e.target.value)} />
+                    </CampoFun>
+                    <CampoFun label="Código postal">
+                      <input className={inputFunClass} required value={funForm.dir_codigo_postal} onChange={(e) => setFun("dir_codigo_postal", e.target.value)} />
+                    </CampoFun>
+                  </div>
+                </fieldset>
+
+                <CampoFun label="Teléfonos (opcional, separados por coma)">
+                  <input className={inputFunClass} placeholder="099123456, 29001234" value={funForm.telefonos} onChange={(e) => setFun("telefonos", e.target.value)} />
+                </CampoFun>
+
+                <div>
+                  <button
+                    type="submit"
+                    disabled={registrando}
+                    className="rounded-full bg-gold px-6 py-2.5 font-semibold text-night transition-opacity disabled:opacity-50"
+                  >
+                    {registrando ? "Registrando…" : "Registrar funcionario"}
+                  </button>
+                </div>
+              </form>
+            )}
           </section>
 
           {/* Formulario */}
