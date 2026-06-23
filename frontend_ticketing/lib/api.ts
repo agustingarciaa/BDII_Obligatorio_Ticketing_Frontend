@@ -444,36 +444,35 @@ export async function eliminarDispositivo(id: number): Promise<void> {
 // ── Asignaciones funcionario-sectorpartido ───────────────────────────────────
 
 export type Asignacion = {
-  id_asignacion: number;
-  fun_id_usuario: number;
-  funcionario_mail: string;
-  funcionario_legajo: number;
-  sectorpartido_nombre_sector: string;
-  sectorpartido_id_estadio: number;
-  sectorpartido_id_evento: number;
+  funcionario_id_usuario: number;
+  numero_legajo: number;
+  mail: string;
+  sectorpartido_nombre_sector: string | null;
+  sectorpartido_id_estadio: number | null;
+  sectorpartido_id_evento: number | null;
+  activo: boolean | null;
 };
 
 export type CrearAsignacionInput = {
-  fun_id_usuario: number;
+  funcionario_id_usuario: number;
   sectorpartido_nombre_sector: string;
   sectorpartido_id_estadio: number;
   sectorpartido_id_evento: number;
 };
 
+export type EliminarAsignacionInput = CrearAsignacionInput;
+
 export async function getAsignaciones(): Promise<Asignacion[]> {
-  const token = getToken();
   const res = await fetch(`${API_URL}/sectores/asignaciones`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authHeaders(),
   });
   if (!res.ok) throw new Error("No se pudieron obtener las asignaciones.");
   return res.json() as Promise<Asignacion[]>;
 }
 
-export async function crearAsignacion(
-  input: CrearAsignacionInput,
-): Promise<{ message: string }> {
+export async function crearAsignacion(input: CrearAsignacionInput): Promise<{ message: string }> {
   const res = await fetch(`${API_URL}/sectores/asignar-funcionario`, {
-    method: "POST",
+    method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -492,10 +491,13 @@ export async function crearAsignacion(
   return data as { message: string };
 }
 
-export async function eliminarAsignacion(id: number): Promise<void> {
+export async function eliminarAsignacion(
+  input: EliminarAsignacionInput,
+): Promise<void> {
   const res = await fetch(`${API_URL}/sectores/desasignar-funcionario`, {
-    method: "DELETE",
+    method: 'DELETE',
     headers: authHeaders(),
+    body: JSON.stringify(input),
   });
   if (!res.ok) {
     const data = (await res
