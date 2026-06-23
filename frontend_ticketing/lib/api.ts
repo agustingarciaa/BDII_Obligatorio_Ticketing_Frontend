@@ -461,19 +461,16 @@ export type CrearAsignacionInput = {
 };
 
 export async function getAsignaciones(): Promise<Asignacion[]> {
-  const token = getToken();
   const res = await fetch(`${API_URL}/sectores/asignaciones`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authHeaders(),
   });
   if (!res.ok) throw new Error("No se pudieron obtener las asignaciones.");
   return res.json() as Promise<Asignacion[]>;
 }
 
-export async function crearAsignacion(
-  input: CrearAsignacionInput,
-): Promise<{ message: string }> {
-  const res = await fetch(`${API_URL}/sectores/asignar-funcionario`, {
-    method: "POST",
+export async function crearAsignacion(input: CrearAsignacionInput): Promise<{ message: string }> {
+  const res = await fetch(`${API_URL}/sectores/asignaciones`, {
+    method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(input),
   });
@@ -493,8 +490,8 @@ export async function crearAsignacion(
 }
 
 export async function eliminarAsignacion(id: number): Promise<void> {
-  const res = await fetch(`${API_URL}/sectores/desasignar-funcionario`, {
-    method: "DELETE",
+  const res = await fetch(`${API_URL}/sectores/asignaciones/${id}`, {
+    method: 'DELETE',
     headers: authHeaders(),
   });
   if (!res.ok) {
