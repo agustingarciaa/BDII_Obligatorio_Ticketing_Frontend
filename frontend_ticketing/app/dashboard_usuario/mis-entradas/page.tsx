@@ -381,7 +381,7 @@ export default function MisEntradasPage() {
 
   return (
     <RequireRole role="CLIENTE">
-      <div className="wc-hero wc-stripes" style={{ minHeight: '100vh' }}>
+      <div className="wc-hero" style={{ minHeight: '100vh' }}>
         <NavbarGeneral links={USUARIO_NAV_LINKS} />
         <main style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1rem' }}>
           <h1 style={{ color: '#ffcc29', fontWeight: 900, fontSize: '1.875rem', marginBottom: '0.5rem' }}>

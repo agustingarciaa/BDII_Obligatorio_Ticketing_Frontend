@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import RequireRole from "@/components/RequireRole";
 import NavbarGeneral from "@/components/navbars/NavbarGeneral";
 import {
@@ -49,6 +49,8 @@ export default function PartidosPage() {
   const [sectoresPartido, setSectoresPartido] = useState<SectorPartido[]>([]);
   const [estadios, setEstadios] = useState<Estadio[]>([]);
   const [equipos, setEquipos] = useState<Equipo[]>([]);
+
+  const formRef = useRef<HTMLDivElement>(null);
 
   const [form, setForm] = useState<FormPartido>(initialForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -124,6 +126,7 @@ export default function PartidosPage() {
       equipo_pais_visitante: partido.equipo_pais_visitante,
       fecha_hora: toDatetimeLocal(partido.fecha_hora),
     });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   async function guardarPartido(e: FormEvent<HTMLFormElement>) {
@@ -264,7 +267,10 @@ export default function PartidosPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+          <section
+            ref={formRef}
+            className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur"
+          >
             <h2 className="text-xl font-bold text-white">
               {editingId === null
                 ? "Crear partido"

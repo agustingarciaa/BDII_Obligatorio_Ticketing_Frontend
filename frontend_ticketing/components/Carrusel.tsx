@@ -51,7 +51,7 @@ export default function Carrusel() {
             {partidos.map((p) => (
               <div
                 key={p.id}
-                className="min-w-0 shrink-0 px-2"
+                className="min-w-0 shrink-0 px-2 h-full"
                 style={{ width: `${100 / visible}%` }}
               >
                 <PartidoCard partido={p} />
