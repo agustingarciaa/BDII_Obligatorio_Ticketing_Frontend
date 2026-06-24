@@ -123,7 +123,7 @@ export default function PartidoDetallePage() {
 
   return (
     <RequireRole role="CLIENTE">
-      <div className="wc-hero wc-stripes" style={{ minHeight: '100vh' }}>
+      <div className="wc-hero" style={{ minHeight: '100vh' }}>
         <NavbarGeneral links={USUARIO_NAV_LINKS} />
         <main style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1rem' }}>
           <Link href="/dashboard_usuario/partidos" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', marginBottom: '1.5rem' }}>

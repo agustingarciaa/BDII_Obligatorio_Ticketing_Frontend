@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import NavbarGeneral from '../../../components/navbars/NavbarGeneral';
 import {
   crearEstadio,
@@ -25,6 +25,8 @@ export default function EstadiosPage() {
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
+
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Gestión de sectores por estadio
   const [sectoresEstadioId, setSectoresEstadioId] = useState<number | null>(null);
@@ -87,6 +89,7 @@ export default function EstadiosPage() {
     setCiudad(estadio.ciudad);
     setMensaje('');
     setError('');
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   async function eliminar(id: number) {
@@ -201,7 +204,10 @@ export default function EstadiosPage() {
           sectores físicos de cada estadio.
         </p>
 
-        <section className="mt-10 rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur">
+        <section
+          ref={formRef}
+          className="mt-10 rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur"
+        >
           <h2 className="mb-5 text-2xl font-semibold">
             {editandoId ? 'Editar estadio' : 'Crear estadio'}
           </h2>

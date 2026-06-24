@@ -25,10 +25,10 @@ export default function PartidoMiniCard({ partido }: Props) {
       : Number.parseFloat(partido.ingreso_total);
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-night-soft p-5 shadow-lg ">
+    <div className="flex h-full flex-col gap-3 rounded-xl border border-white/10 bg-night-soft p-5 shadow-lg ">
       <Link
         href={`/dashboard_usuario/partidos/${partido.id}`}
-        className="partido-card"
+        className="partido-card flex-1 justify-between"
       >
         <div className="flex items-center justify-between gap-2 text-center">
           <span className="text-lg font-bold text-white">

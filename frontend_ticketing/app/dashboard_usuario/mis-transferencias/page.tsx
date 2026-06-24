@@ -97,7 +97,7 @@ function SolicitudCard({ t, onAccion }: { t: Transferencia; onAccion: () => void
 
 function HistorialItem({ t, tipo }: { t: Transferencia; tipo: 'enviada' | 'recibida' }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.875rem 1rem', borderRadius: '0.75rem', background: '#0f1f3d', border: '1px solid rgba(255,255,255,0.08)', gap: '1rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.875rem 1rem', borderRadius: '0.75rem', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.12)', gap: '1rem' }}>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
           <span style={{ fontSize: '0.8rem' }}>{tipo === 'enviada' ? '↑' : '↓'}</span>
@@ -144,7 +144,7 @@ export default function MisTransferenciasPage() {
 
   return (
     <RequireRole role="CLIENTE">
-      <div className="wc-hero wc-stripes" style={{ minHeight: '100vh' }}>
+      <div className="wc-hero" style={{ minHeight: '100vh' }}>
         <NavbarGeneral links={USUARIO_NAV_LINKS} />
         <main style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1rem' }}>
           <h1 style={{ color: '#ffcc29', fontWeight: 900, fontSize: '1.875rem', marginBottom: '2rem' }}>

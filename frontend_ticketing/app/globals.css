@@ -34,8 +34,8 @@
 /* Input de formulario de tarjeta */
 .input-card {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.75rem;
   padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
@@ -52,10 +52,12 @@
 
 /* ── Tarjetas de partido ─────────────────────────────────────────────────── */
 .partido-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0f1f3d;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
   padding: 1.25rem;
   text-decoration: none;
   transition:
@@ -64,7 +66,7 @@
   color: inherit;
 }
 .partido-card:hover {
-  background: #162848;
+  background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 204, 41, 0.55);
 }
 .partido-card:hover .partido-card__arrow {
@@ -82,7 +84,8 @@
 .sector-card {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0f1f3d;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -94,7 +97,8 @@
 .carrito-item {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0f1f3d;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
   padding: 1.25rem;
 }
 
@@ -102,7 +106,8 @@
 .panel-dark {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0f1f3d;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
   padding: 1.25rem;
 }
 

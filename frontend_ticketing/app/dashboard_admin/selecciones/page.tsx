@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import RequireRole from "@/components/RequireRole";
 import NavbarGeneral from "@/components/navbars/NavbarGeneral";
 import {
@@ -21,6 +21,8 @@ const initialForm: FormEquipo = {
 };
 
 export default function SeleccionesPage() {
+  const formRef = useRef<HTMLDivElement>(null);
+
   const [equipos, setEquipos] = useState<Equipo[]>([]);
   const [form, setForm] = useState<FormEquipo>(initialForm);
   const [editingPais, setEditingPais] = useState<string | null>(null);
@@ -61,6 +63,7 @@ export default function SeleccionesPage() {
     setForm({
       pais: equipo.pais,
     });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   async function guardarEquipo(e: FormEvent<HTMLFormElement>) {
@@ -128,7 +131,10 @@ export default function SeleccionesPage() {
 
           {error && <p className="text-red-400">{error}</p>}
 
-          <section className="rounded-2xl border border-white/10 bg-white/10 p-6">
+          <section
+            ref={formRef}
+            className="rounded-2xl border border-white/10 bg-white/10 p-6"
+          >
             <form
               onSubmit={(e) => void guardarEquipo(e)}
               className="flex gap-4"
@@ -173,14 +179,14 @@ export default function SeleccionesPage() {
                       <td className="flex gap-2 py-2">
                         <button
                           onClick={() => editarFila(equipo)}
-                          className="rounded border px-3 py-1"
+                          className="rounded-full border border-white/20 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10"
                         >
                           Editar
                         </button>
 
                         <button
                           onClick={() => void borrarEquipo(equipo.pais)}
-                          className="rounded border px-3 py-1"
+                          className="rounded-full border border-red-300/60 px-5 py-2 text-sm font-semibold text-red-200 transition-colors hover:bg-red-500/10"
                         >
                           Eliminar
                         </button>
