@@ -1,9 +1,8 @@
 services:
-  # Both services ship browser-executed JS: NEXT_PUBLIC_*/EXPO_PUBLIC_* vars
-  # are inlined into the bundle at build time and run in your browser, not
-  # inside the container, so they must point at a host the *browser* can
-  # resolve (localhost when backend + browser are on the same machine) —
-  # not host.docker.internal, which only resolves from inside a container.
+  # App web (Next.js). NEXT_PUBLIC_API_URL se inlinea en el bundle al buildear
+  # y corre en el navegador, por lo que debe apuntar a un host que el *navegador*
+  # pueda resolver (localhost cuando el backend y el navegador están en la misma
+  # máquina).
   frontend:
     build:
       context: .
@@ -15,18 +14,5 @@ services:
       - "3001:3001"
     restart: unless-stopped
 
-  # Native iOS/Android can't run in a container; this serves the Expo
-  # Router web export for browser-based preview/testing.
-  # Host port is 8081 (not 8082) because the backend's CORS allowlist
-  # (backend_ticketing/src/main.ts) already whitelists localhost:8081 as the
-  # default Expo web origin.
-  mobile-web:
-    build:
-      context: ./mobile_ticketing
-      dockerfile: Dockerfile
-      args:
-        - EXPO_PUBLIC_API_URL=${EXPO_PUBLIC_API_URL:-http://localhost:3000}
-    image: ticketing_mobile_web
-    ports:
-      - "8081:80"
-    restart: unless-stopped
+  # La app mobile (Expo) se levanta por separado con `expo start` (ver README),
+  # no se ejecuta en Docker.
