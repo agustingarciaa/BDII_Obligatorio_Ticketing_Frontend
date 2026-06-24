@@ -1,0 +1,12 @@
+node_modules
+**/node_modules
+.next
+**/.next
+.git
+.expo
+**/.expo
+.vscode
+**/*.tsbuildinfo
+npm-debug.log*
+README.md
+mobile_ticketing/dist
