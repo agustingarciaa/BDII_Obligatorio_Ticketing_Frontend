@@ -21,7 +21,7 @@ export type EquipoPopularRow = {
   partidos_jugados: number;
   capacidad_total: number;
   entradas_vendidas: number;
-  porcentaje_venta: number;
+  porcentaje_ventas: number | string;
 };
 
 export async function fetchpartidosMenosVendidos(): Promise<MasVendidoRow[]> {

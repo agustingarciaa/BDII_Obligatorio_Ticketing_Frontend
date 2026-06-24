@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import NavbarGeneral from "@/components/navbars/NavbarGeneral";
 import StatBlock from "@/components/StatBlock";
+import StatDetailModal from "@/components/StatDetailModal";
 import {
   fetchpartidosMenosVendidos,
   fetchSectoresMasPopulares,
@@ -15,6 +16,20 @@ import {
 import { fetchPartidosMasVendidos, type MasVendidoRow } from "@/lib/api";
 import { ADMIN_NAV_LINKS } from "@/lib/nav-links";
 
+type ModalKey =
+  | "masVendidos"
+  | "menosVendidos"
+  | "sectores"
+  | "compradores"
+  | "equipos"
+  | null;
+
+const f = new Intl.NumberFormat("es-UY");
+
+function sum<T>(arr: T[], fn: (item: T) => number): number {
+  return arr.reduce((a, b) => a + fn(b), 0);
+}
+
 export default function EstadisticasPage() {
   const [menosVendidos, setMenosVendidos] = useState<MasVendidoRow[]>([]);
   const [masVendidos, setMasVendidos] = useState<MasVendidoRow[]>([]);
@@ -23,6 +38,9 @@ export default function EstadisticasPage() {
   const [equipos, setEquipos] = useState<EquipoPopularRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [modal, setModal] = useState<ModalKey>(null);
+
+  const closeModal = useCallback(() => setModal(null), []);
 
   useEffect(() => {
     let resolved = 0;
@@ -66,6 +84,7 @@ export default function EstadisticasPage() {
           data={masVendidos}
           loading={loading}
           error={errors.masVendidos ?? null}
+          onViewAll={() => setModal("masVendidos")}
           renderRow={(item: MasVendidoRow) => (
             <div className="text-xs text-white/80">
               <p className="font-semibold text-white">
@@ -83,6 +102,7 @@ export default function EstadisticasPage() {
           data={menosVendidos}
           loading={loading}
           error={errors.menosVendidos ?? null}
+          onViewAll={() => setModal("menosVendidos")}
           renderRow={(item: MasVendidoRow) => (
             <div className="text-xs text-white/80">
               <p className="font-semibold text-white">
@@ -100,6 +120,7 @@ export default function EstadisticasPage() {
           data={sectores}
           loading={loading}
           error={errors.sectores ?? null}
+          onViewAll={() => setModal("sectores")}
           renderRow={(item: SectorPopularRow) => (
             <div className="text-xs text-white/80">
               <p className="font-semibold text-white">{item.nombre_sector}</p>
@@ -116,6 +137,7 @@ export default function EstadisticasPage() {
           data={compradores}
           loading={loading}
           error={errors.compradores ?? null}
+          onViewAll={() => setModal("compradores")}
           renderRow={(item: MayorCompradorRow) => (
             <div className="text-xs text-white/80">
               <p className="font-semibold text-white">{item.mail}</p>
@@ -131,17 +153,198 @@ export default function EstadisticasPage() {
           data={equipos}
           loading={loading}
           error={errors.equipos ?? null}
+          onViewAll={() => setModal("equipos")}
           renderRow={(item: EquipoPopularRow) => (
             <div className="text-xs text-white/80">
               <p className="font-semibold text-white">{item.pais}</p>
               <p className="mt-0.5 text-white/50">
                 {item.entradas_vendidas} entradas · {item.partidos_jugados}{" "}
-                partidos
+                partidos {Number(item.porcentaje_ventas).toFixed(2)}%
               </p>
             </div>
           )}
         />
       </div>
+
+      {modal === "masVendidos" && (
+        <StatDetailModal
+          title="Partidos más vendidos"
+          data={masVendidos}
+          totals={[
+            {
+              label: "Total entradas",
+              value: f.format(
+                sum(masVendidos, (i) => i.total_entradas_vendidas),
+              ),
+            },
+            {
+              label: "Ingreso total",
+              value: `$ ${f.format(sum(masVendidos, (i) => Number(i.ingreso_total)))}`,
+            },
+            { label: "Partidos", value: f.format(masVendidos.length) },
+          ]}
+          renderRow={(item: MasVendidoRow) => (
+            <div className="flex items-center justify-between text-sm text-white/80">
+              <div>
+                <p className="font-semibold text-white">
+                  {item.equipo_pais_local} vs {item.equipo_pais_visitante}
+                </p>
+                <p className="mt-0.5 text-xs text-white/40">{item.estadio}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gold">
+                  {f.format(item.total_entradas_vendidas)}
+                </p>
+                <p className="text-xs text-white/40">
+                  $ {f.format(Number(item.ingreso_total))}
+                </p>
+              </div>
+            </div>
+          )}
+          onClose={closeModal}
+        />
+      )}
+
+      {modal === "menosVendidos" && (
+        <StatDetailModal
+          title="Partidos menos vendidos"
+          data={menosVendidos}
+          totals={[
+            {
+              label: "Total entradas",
+              value: f.format(
+                sum(menosVendidos, (i) => i.total_entradas_vendidas),
+              ),
+            },
+            {
+              label: "Ingreso total",
+              value: `$ ${f.format(sum(menosVendidos, (i) => Number(i.ingreso_total)))}`,
+            },
+            { label: "Partidos", value: f.format(menosVendidos.length) },
+          ]}
+          renderRow={(item: MasVendidoRow) => (
+            <div className="flex items-center justify-between text-sm text-white/80">
+              <div>
+                <p className="font-semibold text-white">
+                  {item.equipo_pais_local} vs {item.equipo_pais_visitante}
+                </p>
+                <p className="mt-0.5 text-xs text-white/40">{item.estadio}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gold">
+                  {f.format(item.total_entradas_vendidas)}
+                </p>
+                <p className="text-xs text-white/40">
+                  $ {f.format(Number(item.ingreso_total))}
+                </p>
+              </div>
+            </div>
+          )}
+          onClose={closeModal}
+        />
+      )}
+
+      {modal === "sectores" && (
+        <StatDetailModal
+          title="Sectores más populares"
+          data={sectores}
+          totals={[
+            {
+              label: "Total vendidas",
+              value: f.format(sum(sectores, (i) => i.total_vendidas)),
+            },
+            {
+              label: "Capacidad total",
+              value: f.format(sum(sectores, (i) => i.capacidad_max)),
+            },
+            { label: "Sectores", value: f.format(sectores.length) },
+          ]}
+          renderRow={(item: SectorPopularRow) => (
+            <div className="flex items-center justify-between text-sm text-white/80">
+              <div>
+                <p className="font-semibold text-white">{item.nombre_sector}</p>
+                <p className="mt-0.5 text-xs text-white/40">
+                  {item.estadio_nombre}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gold">
+                  {f.format(item.total_vendidas)} /{" "}
+                  {f.format(item.capacidad_max)}
+                </p>
+              </div>
+            </div>
+          )}
+          onClose={closeModal}
+        />
+      )}
+
+      {modal === "compradores" && (
+        <StatDetailModal
+          title="Mayores compradores"
+          data={compradores}
+          totals={[
+            {
+              label: "Total compras",
+              value: f.format(sum(compradores, (i) => i.cant_compras)),
+            },
+            { label: "Compradores", value: f.format(compradores.length) },
+          ]}
+          renderRow={(item: MayorCompradorRow) => (
+            <div className="flex items-center justify-between text-sm text-white/80">
+              <div>
+                <p className="font-semibold text-white">{item.mail}</p>
+                <p className="mt-0.5 text-xs text-white/40">
+                  {item.dir_pais} · {item.dir_localidad}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gold">
+                  {f.format(item.cant_compras)} compras
+                </p>
+              </div>
+            </div>
+          )}
+          onClose={closeModal}
+        />
+      )}
+
+      {modal === "equipos" && (
+        <StatDetailModal
+          title="Equipos populares"
+          data={equipos}
+          totals={[
+            {
+              label: "Total entradas",
+              value: f.format(sum(equipos, (i) => i.entradas_vendidas)),
+            },
+            {
+              label: "Capacidad total",
+              value: f.format(sum(equipos, (i) => i.capacidad_total)),
+            },
+            { label: "Equipos", value: f.format(equipos.length) },
+          ]}
+          renderRow={(item: EquipoPopularRow) => (
+            <div className="flex items-center justify-between text-sm text-white/80">
+              <div>
+                <p className="font-semibold text-white">{item.pais}</p>
+                <p className="mt-0.5 text-xs text-white/40">
+                  {item.partidos_jugados} partidos
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gold">
+                  {f.format(item.entradas_vendidas)}
+                </p>
+                <p className="text-xs text-white/40">
+                  {Number(item.porcentaje_ventas).toFixed(2)}%
+                </p>
+              </div>
+            </div>
+          )}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }
