@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname, ".."),
   },
+  output: "standalone",
+  outputFileTracingRoot: path.join(__dirname, ".."),
 };
 
 export default nextConfig;
